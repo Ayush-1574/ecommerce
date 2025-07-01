@@ -1,0 +1,9 @@
+# Ignore node_modules from both frontend and backend
+/client/node_modules
+/server/node_modules
+
+# Optional: ignore other common files
+.env
+.DS_Store
+dist
+build
