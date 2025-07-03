@@ -32,11 +32,6 @@ function App() {
 
   if(isLoading) return <div><Skeleton className="h-[600px] w-[600px] bg-black" /></div>
 
-  console.log(isLoading , user)
-
-
- 
-
   const router = createBrowserRouter(
   createRoutesFromElements(
     <>

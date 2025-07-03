@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import {
   Sheet,
   SheetContent,
@@ -11,6 +11,11 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react"
+import ImageUpload from "./ImageUpload"
+import { useDispatch, useSelector } from "react-redux"
+import { addNewProduct, fetchAllProduct } from "@/store/admin/product-slice"
+import { toast } from "sonner"
+import AdminProductTile from "@/components/admin-view/product-tile"
 
 const initialFormData = {
     image: null,
@@ -26,12 +31,18 @@ const initialFormData = {
 const Product = () => {
     const [openCreateProductDialog, setOpenCreateProductDialog] = useState(false)
     const [formData, setFormData] = useState(initialFormData)
-    const [isLoading, setIsLoading] = useState(false)
-    const [imageFile , setImageFile] = useState(null);
-    const [uploadedImageUrl , setUploadedImageUrl] = useState("")
+    const [imageFile, setImageFile] = useState(null)
+    const [uploadImageUrl,setUploadImageUrl] = useState("")
+    const [imageLoadingState , setimageLoadingState] = useState(false)
     const inputRef = useRef(null)
+    const dispatch = useDispatch()
+    const {productList , isLoading} = useSelector(state => state.adminProducts)
 
-    const handleChange = (e) => {
+
+    //if (isLoading) return <div>Loading products...</div>;
+   
+
+      const handleChange = (e) => {
         const { name, value, files } = e.target
         setFormData(prev => ({
             ...prev,
@@ -39,51 +50,46 @@ const Product = () => {
         }))
     }
 
+  useEffect(() => {
+  const load = async () => {
+     dispatch(fetchAllProduct());
+   
+  };
+  load();
+}, [dispatch]);
+
+    console.log(formData)
+
     const handleSubmit = async (e) => {
         e.preventDefault()
-        setIsLoading(true)
+        
         try {
-            // Handle form submission here
-            console.log("Form submitted:", formData)
-            // Reset form after submission
-            setFormData(initialFormData)
-            setOpenCreateProductDialog(false)
+            await dispatch(addNewProduct({
+                ...formData , 
+                image : uploadImageUrl
+            })).then((data) => {
+                if(data?.payload?.success){
+                    dispatch(fetchAllProduct())
+                    setFormData(initialFormData)
+                    setImageFile(null)
+                    toast("Product Added Successfully")
+                    setOpenCreateProductDialog(false)
+
+                }
+            })
+            
+    
         } catch (error) {
             console.error("Error submitting form:", error)
         } finally {
-            setIsLoading(false)
+            setimageLoadingState(false)
         }
     }
 
-    const handleImageChange = (e) => {
-        console.log(e.target.files)
-        const file = e.target.files[0];
-        //const previewUrl = URL.createObjectURL(file)
-        if (file) setImageFile(file)
-    }
-
-    const handleDragOver = (e) => {
-        e.preventDefault()
-
-
-    }
-
-    const handleDrop = (e) => {
-        e.preventDefault()
-        const droppedFile = e.dataTransfer.files?.[0]
-        if(droppedFile) setImageFile(droppedFile)
-    }
-
-    const handleRemoveImage = (e) => {
-        setImageFile(null)
-        console.log(inputRef.current)
-        if(inputRef.current){
-            inputRef.current.value = ""
-        }
-    }
+        
     return (
         <div className="p-4">
-            <div className="mb-5 w-full flex justify-end">
+            <div className="mb-5 w-full text-black flex justify-end">
                 <Button onClick={() => setOpenCreateProductDialog(true)}>
                     Add new Product
                 </Button>
@@ -91,6 +97,9 @@ const Product = () => {
 
             <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {/* Product grid will go here */}
+                {   productList && productList.length > 0 ?
+                    productList?.map((productItems) => (<AdminProductTile productItems = {productItems}/>)) : null
+                }
             </div>
 
             <Sheet open={openCreateProductDialog} onOpenChange={setOpenCreateProductDialog}>
@@ -100,36 +109,18 @@ const Product = () => {
                     </SheetHeader>
                     
                     <form onSubmit={handleSubmit} className="">
-                        {/* Image Upload */}
-                        <div onDragOver = {handleDragOver} onDrop = {handleDrop}className="space-y-2 ">
-                            <Label htmlFor="image">Product Image</Label>
-                            <Input 
-                                id="image"
-                                name="image"
-                                className = "hidden"
-                                type="file"
-                                accept="image/*"
-                                ref = {inputRef}
-                                onChange = {handleImageChange}
-                            />
-                            {
-                                !imageFile ? (
-                                <label htmlFor="image" className = "flex flex-col items-center">
-                                        <UploadCloudIcon className="w-10 h-10 text-muted-foreground"/>
-                                        <span>Drag & Drop or Click to Upload image</span>
-                                </label> ): (<div className = "flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <FileIcon className="w-7 text-primary mr-2 h-7"/>
-                                    </div>
-                                    <p className = "text-sm font-medium">{imageFile.name}</p>
-                                    <Button varient = "ghost" size = "icon" className= "text-muted-foreground hover:text-foreground" onClick = {handleRemoveImage}>
-                                        <XIcon className = "w-4 h-4"/>
-                                        <span className = "sr-only">Remove File</span>
-                                    </Button>
-                                </div>)
-                            }
-                        </div>
 
+                        {/* Image  */}
+                        <ImageUpload 
+                        imageFile = {imageFile}
+                        setImageFile = {setImageFile}
+                        setUploadImageUrl = {setUploadImageUrl}
+                        uploadImageUrl = {uploadImageUrl}
+                        setimageLoadingState = {setimageLoadingState}
+                        imageLoadingState = {imageLoadingState}
+
+
+                        />
                         {/* Title */}
                         <div className="space-y-2">
                             <Label htmlFor="title">Title</Label>
@@ -238,12 +229,13 @@ const Product = () => {
                             <Button 
                                 variant="outline" 
                                 type="button"
+                                className = "text-black"
                                 onClick={() => setOpenCreateProductDialog(false)}
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={isLoading}>
-                                {isLoading ? "Saving..." : "Save Product"}
+                            <Button type="submit" className = "text-black" disabled={imageLoadingState}>
+                                {imageLoadingState ? "Saving..." : "Save Product"}
                             </Button>
                         </div>
                     </form>
