@@ -12,7 +12,8 @@ const ImageUpload = ({
     uploadedImageUrl,
     setUploadImageUrl,
     imageLoadingState,
-    setimageLoadingState
+    setimageLoadingState,
+    currentEditedId
 }) => {
    
     const inputRef = useRef(null)
@@ -66,12 +67,12 @@ const ImageUpload = ({
     } , [imageFile])
 
     return (
-        <div className="space-y-2">
+        <div className= {`space-y-2 `}>
             <Label htmlFor="image">Product Image</Label>
             <div 
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
-                className={`border-2 border-dashed rounded-lg p-4 text-center ${
+                className={` ${currentEditedId !== null ? "opacity-60": ""}border-2 border-dashed rounded-lg p-4 text-center ${
                     !imageFile ? "border-gray-300 hover:border-primary cursor-pointer" : "border-transparent"
                 }`}
             >
@@ -82,10 +83,11 @@ const ImageUpload = ({
                     type="file"
                     accept="image/*"
                     ref={inputRef}
+                    disabled = {currentEditedId}
                     onChange={handleImageChange}
                 />
                 {!imageFile ? (
-                    <label htmlFor="image" className="flex flex-col items-center gap-2">
+                    <label htmlFor="image" className={`${currentEditedId !== null ? "cursor-not-allowed" : ""}flex flex-col items-center gap-2`}>
                         <UploadCloudIcon className="w-10 h-10 text-muted-foreground"/>
                         <span>Drag & Drop or Click to Upload image</span>
                         <span className="text-sm text-muted-foreground">

@@ -56,7 +56,7 @@ export const loginUser = async(req , res) => {
         }
 
         const token = jwt.sign({
-            _id : checkuser._id , role : checkuser.role , email : checkuser.email
+            _id : checkuser._id , role : checkuser.role , email : checkuser.email , userName : checkuser.userName
         } , 'CLIENT_SECRET_KEY' , {expiresIn : "60m"})
 
         res.cookie('token' , token , {httpOnly: true , secure : false}).json({
@@ -83,6 +83,7 @@ export const loginUser = async(req , res) => {
 // logout
 
 export const logoutUser = async (req , res) => {
+    
     res.clearCookie('token').json({
         success : true,
         message : "Logged out successfully",

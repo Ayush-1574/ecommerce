@@ -6,14 +6,16 @@ import { Product } from "../../models/product.js"
 const addProduct = async (req , res) => {
     try {
         const {title , description , category , brand , price , image , salePrice , totalStock} = req.body
+    
         if (!title || !price || !category || !brand ||!image) {
             return res.status(400).json({
                 success: false,
                 message: "Title, price, and category are required fields"
             });
         }
+        console.log((title))
+       
         const newProduct = await Product.create({title , description , category , brand , price , image , salePrice , totalStock})
-        console.log(image)
         
         if(!newProduct){
             return res.status(404).json({
@@ -28,9 +30,10 @@ const addProduct = async (req , res) => {
 
 
     } catch (error) {
-        res.status(500).json({
+        res.status(400).json({
             success : false,
-            message : "Error Occured"
+           message : "Error Occured",
+            errorM : error.message
         })
         
     }
@@ -57,23 +60,24 @@ const fetchProduct = async (req , res) => {
 const editProduct = async (req , res) => {
     try {
         const {id} = req.params;
-        const {title , description , category , brand , price , image , salePrice , totalStock} = req.body
-        const findProduct = await findById(id)
+        const {title , description , category  , price , image , salePrice , totalStock} = req.body
+        let findProduct = await Product.findById(id)
         if(!findProduct){
             return res.status(404).json({
-            success : false,
-            message : "Product not found"
-        })
-    }
+                success : false,
+                message : "Product not found"
+            })
+        }
         findProduct.title = title || findProduct.title;
         findProduct.description = description || findProduct.description;
         findProduct.category = category || findProduct.category;
-        findProduct.brand = brand || findProduct.brand;
-        findProduct.price = price || findProduct.price;
+        
+        findProduct.price = price === "" ? 0 : price || findProduct.price;
         findProduct.image = image || findProduct.image;
-        findProduct.salePrice = salePrice || findProduct.salePrice;
-        findProduct.totalStock = totalStock || findProduct.totalStock;
-
+        findProduct.salePrice = salePrice === "" ? 0 : salePrice|| findProduct.salePrice;
+        findProduct.totalStock = totalStock  === "" ? 0 : totalStock || findProduct.totalStock;
+        
+        console.log(title)
         await findProduct.save();
         return res.json({
             success : true,
@@ -84,7 +88,8 @@ const editProduct = async (req , res) => {
     } catch (error) {
         res.status(500).json({
             success : false,
-            message : "Error Occured"
+            message : "Error Occured",
+            errorM : error.message
         })
         
     }

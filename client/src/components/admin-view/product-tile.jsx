@@ -1,5 +1,7 @@
 import { Card } from "../ui/card"
 import { Button } from "../ui/button"
+import {useState } from "react"
+import {useDispatch} from "react-redux"
 import {
  
   CardAction,
@@ -9,8 +11,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { deleteProduct } from "@/store/admin/product-slice"
 
-function AdminproductTile({productItems}){
+
+
+function AdminproductTile({productItems , setOpenCreateProductDialog,setCurrentEditedId, setFormData ,handleDelete }){
+
+     const dispatch = useDispatch()
+
+
+    const handleEdit = () => {
+    setOpenCreateProductDialog(true)
+    setCurrentEditedId(productItems._id)
+    setFormData(productItems)
+}
+ 
+   
  
     if(!productItems){return null}
     return (
@@ -31,14 +47,14 @@ function AdminproductTile({productItems}){
             </CardContent>
           <CardFooter className="flex justify-between gap-4">
             <Button 
-                className="bg-blue-500 hover:bg-blue-600 text-black px-4 py-2 rounded-md transition-colors"
-                onClick={() => handleEdit(item.id)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
+                onClick={() => handleEdit()}
             >
                 Edit
             </Button>
             <Button 
-                className="bg-red-500 hover:bg-red-600 text-black px-4 py-2 rounded-md transition-colors"
-                onClick={() => handleDelete(item.id)}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition-colors"
+                onClick={() => handleDelete(productItems?._id)}
             >
                 Delete
             </Button>

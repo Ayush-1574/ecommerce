@@ -18,21 +18,21 @@ const productSchema = mongoose.Schema({
     category : {
         type : String,
         required : true,
-        unique : true,
+        
     }
     ,
     price : {
-        type : Number,
-        default : 0
+        type : String,
+       
     },
 
     salePrice : {
-        type : Number,
-        default : 0
+        type : String,
+        
     },
     totalStock : {
-        type : Number,
-        default : 0,
+        type : String,
+        
     }
 
 } , {timestamps : true})

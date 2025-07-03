@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react"
 import ImageUpload from "./ImageUpload"
 import { useDispatch, useSelector } from "react-redux"
-import { addNewProduct, fetchAllProduct } from "@/store/admin/product-slice"
+import { addNewProduct, deleteProduct, editProduct, fetchAllProduct } from "@/store/admin/product-slice"
 import { toast } from "sonner"
 import AdminProductTile from "@/components/admin-view/product-tile"
 
@@ -37,6 +37,8 @@ const Product = () => {
     const inputRef = useRef(null)
     const dispatch = useDispatch()
     const {productList , isLoading} = useSelector(state => state.adminProducts)
+    const [currentEditedId , setCurrentEditedId] = useState(null)
+   
 
 
     //if (isLoading) return <div>Loading products...</div>;
@@ -48,6 +50,17 @@ const Product = () => {
             ...prev,
             [name]: files ? files[0] : value
         }))
+    }
+
+     const handleDelete = async(current_id) => {
+        console.log(current_id)
+        
+        await dispatch(deleteProduct(current_id)).then((data) => {
+            if(data?.payload?.success){
+               dispatch(fetchAllProduct());
+            }
+
+        })
     }
 
   useEffect(() => {
@@ -64,6 +77,7 @@ const Product = () => {
         e.preventDefault()
         
         try {
+            if(currentEditedId === null){
             await dispatch(addNewProduct({
                 ...formData , 
                 image : uploadImageUrl
@@ -76,7 +90,24 @@ const Product = () => {
                     setOpenCreateProductDialog(false)
 
                 }
-            })
+            })}
+            else{
+                await dispatch(editProduct({
+                    ...formData,
+                    
+                    id : currentEditedId
+                })).then((data) => {
+                    console.log(currentEditedId)
+                    if(data?.payload?.success){
+                    dispatch(fetchAllProduct())
+                    setFormData(initialFormData)
+                    setImageFile(null)
+                    toast("Edit Product Successfully")
+                    setOpenCreateProductDialog(false)
+
+                    }
+                })
+            }
             
     
         } catch (error) {
@@ -89,23 +120,33 @@ const Product = () => {
         
     return (
         <div className="p-4">
-            <div className="mb-5 w-full text-black flex justify-end">
+            <div className="mb-5 w-full flex justify-end">
                 <Button onClick={() => setOpenCreateProductDialog(true)}>
-                    Add new Product
+                    Add new product
                 </Button>
             </div>
 
             <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {/* Product grid will go here */}
                 {   productList && productList.length > 0 ?
-                    productList?.map((productItems) => (<AdminProductTile productItems = {productItems}/>)) : null
+                    productList?.map((productItems) => (
+                    <AdminProductTile
+                         productItems = {productItems}
+                         setOpenCreateProductDialog = {setOpenCreateProductDialog}
+                         setCurrentEditedId = {setCurrentEditedId}
+                         setFormData = {setFormData}
+                         handleDelete = {handleDelete}
+                         
+                         />)) : null
                 }
             </div>
 
-            <Sheet open={openCreateProductDialog} onOpenChange={setOpenCreateProductDialog}>
+            <Sheet open={openCreateProductDialog} onOpenChange={() => {setOpenCreateProductDialog(false); setCurrentEditedId(null) ; setFormData(initialFormData)}}>
                 <SheetContent side="right" className="overflow-auto w-full sm:max-w-md">
                     <SheetHeader className="mb-6">
-                        <SheetTitle>Add New Product</SheetTitle>
+                        <SheetTitle>{
+                        currentEditedId != null  ?  "Edit Product ":" Add new product"
+                    }</SheetTitle>
                     </SheetHeader>
                     
                     <form onSubmit={handleSubmit} className="">
@@ -118,6 +159,7 @@ const Product = () => {
                         uploadImageUrl = {uploadImageUrl}
                         setimageLoadingState = {setimageLoadingState}
                         imageLoadingState = {imageLoadingState}
+                        currentEditedId = {currentEditedId}
 
 
                         />
@@ -229,12 +271,12 @@ const Product = () => {
                             <Button 
                                 variant="outline" 
                                 type="button"
-                                className = "text-black"
+                                className = "text-white"
                                 onClick={() => setOpenCreateProductDialog(false)}
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit" className = "text-black" disabled={imageLoadingState}>
+                            <Button type="submit" disabled={imageLoadingState}>
                                 {imageLoadingState ? "Saving..." : "Save Product"}
                             </Button>
                         </div>
