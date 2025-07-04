@@ -9,7 +9,7 @@ const initialState = {
 
 export const addNewProduct = createAsyncThunk("/products/addNewproduct" , async(formData) => {
     try {
-        console.log(formData)
+       
         const response = await axios.post("http://localhost:5000/api/v1/admin/products/add" , formData , {
             headers : {
                 'content-type' : 'application/json'
@@ -23,13 +23,13 @@ export const addNewProduct = createAsyncThunk("/products/addNewproduct" , async(
     }
 })
 export const fetchAllProduct = createAsyncThunk("/products/addNewproduct" , async() => {
-    console.log("Rejected")
+
     const response = await axios.get("http://localhost:5000/api/v1/admin/products/get"  , {
         headers : {
             'content-type' : 'application/json'
         }
     })
-   console.log("Rejected")
+  
     return response.data
 })
 export const editProduct = createAsyncThunk("/products/editproduct" , async({id , ...formData}) => {
@@ -58,7 +58,6 @@ const AdminProductSlice = createSlice({
             state.isLoading = true;
         })
         .addCase(fetchAllProduct.fulfilled , (state , action) => {
-            console.log(action.payload.data)
             state.isLoading = false;
             state.productList = action.payload.data
         })

@@ -1,76 +1,39 @@
-import React, { useState } from "react";
+import { filterOptions } from "@/config";
+import { Fragment } from "react";
+import { Label } from "../ui/label";
+import { Checkbox } from "../ui/checkbox";
+import { Separator } from "../ui/separator";
 
-function ProductFilter() {
-  const filterOptions = {
-    category: [
-      { id: "men", label: "Men" },
-      { id: "women", label: "Women" },
-      { id: "kids", label: "Kids" },
-      { id: "footwear", label: "Footwear" },
-      { id: "accessories", label: "Accessories" },
-    ],
-    brand: [
-      { id: "nike", label: "Nike" },
-      { id: "adidas", label: "Adidas" },
-      { id: "puma", label: "Puma" },
-      { id: "zara", label: "Zara" },
-    ],
-  };
-
-  const [selectedFilters, setSelectedFilters] = useState({
-    category: [],
-    brand: [],
-  });
-
-  const handleCheckboxChange = (type, id) => {
-    setSelectedFilters((prev) => {
-      const isSelected = prev[type].includes(id);
-      return {
-        ...prev,
-        [type]: isSelected
-          ? prev[type].filter((item) => item !== id)
-          : [...prev[type], id],
-      };
-    });
-  };
-
+function ProductFilter({ filters, handleFilter }) {
   return (
-    <div className="p-4 border rounded-md shadow-sm bg-white w-full max-w-xs">
-      <h2 className="text-lg font-semibold mb-4">Filters</h2>
-
-      {/* Category Filter */}
-      <div className="mb-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Category</h3>
-        {filterOptions.category.map((item) => (
-          <label
-            key={item.id}
-            className="flex items-center gap-2 text-sm text-gray-600 mb-1"
-          >
-            <input
-              type="checkbox"
-              checked={selectedFilters.category.includes(item.id)}
-              onChange={() => handleCheckboxChange("category", item.id)}
-            />
-            {item.label}
-          </label>
-        ))}
+    <div className="bg-background rounded-lg shadow-sm">
+      <div className="p-4 border-b">
+        <h2 className="text-lg font-extrabold">Filters</h2>
       </div>
-
-      {/* Brand Filter */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Brand</h3>
-        {filterOptions.brand.map((item) => (
-          <label
-            key={item.id}
-            className="flex items-center gap-2 text-sm text-gray-600 mb-1"
-          >
-            <input
-              type="checkbox"
-              checked={selectedFilters.brand.includes(item.id)}
-              onChange={() => handleCheckboxChange("brand", item.id)}
-            />
-            {item.label}
-          </label>
+      <div className="p-4 space-y-4">
+        {Object.keys(filterOptions).map((keyItem) => (
+          <Fragment>
+            <div>
+              <h3 className="text-base font-bold">{keyItem}</h3>
+              <div className="grid gap-2 mt-2">
+                {filterOptions[keyItem].map((option) => (
+                  <Label className="flex font-medium items-center gap-2 ">
+                    <Checkbox
+                      checked={
+                        filters &&
+                        Object.keys(filters).length > 0 &&
+                        filters[keyItem] &&
+                        filters[keyItem].indexOf(option.id) > -1
+                      }
+                      onCheckedChange={() => handleFilter(keyItem, option.id)}
+                    />
+                    {option.label}
+                  </Label>
+                ))}
+              </div>
+            </div>
+            <Separator />
+          </Fragment>
         ))}
       </div>
     </div>

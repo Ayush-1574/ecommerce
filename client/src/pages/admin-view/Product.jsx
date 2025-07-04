@@ -201,10 +201,10 @@ const Product = () => {
                                     <SelectValue placeholder="Select category" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="electronics">Electronics</SelectItem>
-                                    <SelectItem value="clothing">Clothing</SelectItem>
-                                    <SelectItem value="home">Home & Kitchen</SelectItem>
-                                    <SelectItem value="books">Books</SelectItem>
+                                    <SelectItem value="men">men</SelectItem>
+                                    <SelectItem value="women">women</SelectItem>
+                                    <SelectItem value="kids">kids</SelectItem>
+                                    <SelectItem value="footwear">footwear</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
