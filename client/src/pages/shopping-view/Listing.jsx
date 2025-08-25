@@ -1,6 +1,6 @@
 import ProductFilter from "@/components/shopping-view/filter";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
-import ShoppingProductTile from "@/components/shopping-view/product-tile";
+import ShoppingProductTile from "@/components/shopping-view/ShoppingProductile";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,13 +9,13 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useToast } from "@/components/ui/use-toast";
+import {toast} from "sonner"
+
 import { sortOptions } from "@/config";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import {
   fetchAllFilteredProducts,
-  fetchProductDetails,
-} from "@/store/shop/products-slice";
+} from "@/store/shop/product-slice";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -49,7 +49,7 @@ function ShoppingListing() {
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-  const { toast } = useToast();
+  
 
   const categorySearchParam = searchParams.get("category");
 
@@ -95,10 +95,7 @@ function ShoppingListing() {
       if (indexOfCurrentItem > -1) {
         const getQuantity = getCartItems[indexOfCurrentItem].quantity;
         if (getQuantity + 1 > getTotalStock) {
-          toast({
-            title: `Only ${getQuantity} quantity can be added for this item`,
-            variant: "destructive",
-          });
+          toast.error(`Only ${getQuantity} quantity can be added for this item`);
 
           return;
         }
@@ -114,9 +111,7 @@ function ShoppingListing() {
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
-        toast({
-          title: "Product is added to cart",
-        });
+        toast("Product is added to cart");
       }
     });
   }

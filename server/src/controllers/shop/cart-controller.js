@@ -1,5 +1,5 @@
-import Cart from "../../models/Cart.js"
-import Product from "../../models/product.js"
+import {Cart} from "../../models/Cart.js"
+import {Product} from "../../models/product.js"
 const addToCart = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
@@ -138,7 +138,8 @@ const updateCartItemQty = async (req, res) => {
       });
     }
 
-    cart.items[findCurrentProductIndex].quantity = quantity;
+    cart.items[findCurrentProductIndex].quantity = quantity
+    await cart.save();          
     await cart.save();
 
     await cart.populate({
@@ -229,7 +230,7 @@ const deleteCartItem = async (req, res) => {
   }
 };
 
-module.exports = {
+export{
   addToCart,
   updateCartItemQty,
   deleteCartItem,

@@ -56,15 +56,22 @@ const authSlice =  createSlice({
 
         }
     },
+
+    
     extraReducers: (builder) => {
         builder
         .addCase(registerUser.pending , (state) => {
             state.isLoading = true
         }).addCase(registerUser.fulfilled , (state , action) => {
             state.isLoading = false
-            state.user = null
-            state.isAuthenticated = false;
-        }).addCase(registerUser.rejected , (state , action) => {
+            state.user = action.payload.success ? action.payload.user : null; 
+            state.isAuthenticated = action.payload.success ? true : false;
+         })//.addCase(registerUser.fulfilled , (state , action) => {
+        //     state.isLoading = false
+        //     state.user = null
+        //     state.isAuthenticated = false;
+        // })
+        .addCase(registerUser.rejected , (state , action) => {
             state.isLoading = false
             state.user = null
             state.isAuthenticated = false;  

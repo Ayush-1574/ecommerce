@@ -5,6 +5,8 @@ import cors from "cors"
 import authRouter from "./src/routes/auth/auth-route.js"
 import adminProductRouter from "./src/routes/admin/product-routes.js"
 import shopProductRoute from "./src/routes/shop-view/product-route.js"
+import cartProductRoute from "./src/routes/shop-view/card-routes.js"
+import shopAddressRoute from "./src/routes/shop-view/address-routes.js"
 const app = express()
 
 mongoose.connect(
@@ -34,4 +36,7 @@ app.use(express.json())
 app.use("/api/v1/auth" , authRouter)
 app.use("/api/v1/admin/products" , adminProductRouter)
 app.use("/api/v1/shop/products" ,shopProductRoute)
+app.use("/api/v1/shop/cart" ,cartProductRoute)
+app.use("/api/v1/shop/address" ,shopAddressRoute)
+
 app.listen(PORT , () => console.log("server is running on PORT" , PORT))

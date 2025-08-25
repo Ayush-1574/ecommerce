@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useDispatch } from "react-redux";
 import { registerUser } from "@/store/auth-slice";
 import { toast } from "sonner"
+import { GoogleAuthProvider  , signInWithPopup} from "firebase/auth";
 
 const initialState = {
   userName : "",
@@ -16,22 +17,20 @@ const Register = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   console.log(formData)
+  const provider = new GoogleAuthProvider();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(registerUser(formData)).then((data) => {
       console.log(data)
       if(data?.payload?.success) {
-        toast.success( data?.payload?.message || "Registration Successful" , {
-          duration : 4000,
-          
-        })
+       toast.success("Registration Successful", { style: { background: "blue", color: "blue" } })
         navigate("/auth/login")
       }
       else{
          toast.error( data?.payload?.message , {
+          style :{color : "blue" , color : "black"}
           
-          duration : 4000
          })
       } 
     })
@@ -109,6 +108,8 @@ const Register = () => {
             Register
           </button>
         </div>
+        <br/>
+        <button>Sign in with Google</button>
       </form>
 
       <p className="text-sm text-gray-400 text-center">

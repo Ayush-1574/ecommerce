@@ -15,7 +15,7 @@ const cartSchema = mongoose.Schema({
             required : true,
         },
         quantity : {
-            type : number,
+            type : Number,
             required : true,
             min : 1
         }
@@ -25,3 +25,5 @@ const cartSchema = mongoose.Schema({
 } , {timestamps : true})
 
 export const Cart = mongoose.model("Cart" , cartSchema)
+
+
