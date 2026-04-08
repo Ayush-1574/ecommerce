@@ -24,12 +24,12 @@ const Register = () => {
     dispatch(registerUser(formData)).then((data) => {
       console.log(data)
       if(data?.payload?.success) {
-       toast.success("Registration Successful", { style: { background: "blue", color: "blue" } })
+       toast.success("Registration Successful", { style: { color: "blue" } })
         navigate("/auth/login")
       }
       else{
          toast.error( data?.payload?.message , {
-          style :{color : "blue" , color : "black"}
+          style :{color : "blue"}
           
          })
       } 

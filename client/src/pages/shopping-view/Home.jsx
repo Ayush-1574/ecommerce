@@ -230,14 +230,25 @@
 
 
 
-
+//import { useEffect } from "react";
 
 
 
 function ShoppingHome() {
+
+  const [count , setCount ] = useState(0);
+
+  useEffect(() => {
+    //count = count + 1;
+    setCount(count + 1);
+
+    console.log(count);
+  } , [])
+
+  setCount(count + 1)
   return (
     <div>
-      "HI"
+      "HI" , {count}
     </div>
   );
 }
