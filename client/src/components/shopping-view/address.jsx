@@ -10,7 +10,7 @@ import {
   fetchAllAddresses,
 } from "@/store/shop/address-slice";
 import AddressCard from "./address-card";
-import { toast } from "sonner";
+import { useToast } from "../ui/use-toast";
 
 const initialAddressFormData = {
   address: "",
@@ -26,14 +26,17 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { addressList } = useSelector((state) => state.shopAddress);
-
+  const { toast } = useToast();
 
   function handleManageAddress(event) {
     event.preventDefault();
 
     if (addressList.length >= 3 && currentEditedId === null) {
       setFormData(initialAddressFormData);
-      toast.error("You can add max 3 addresses");
+      toast({
+        title: "You can add max 3 addresses",
+        variant: "destructive",
+      });
 
       return;
     }
@@ -50,7 +53,9 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
             dispatch(fetchAllAddresses(user?.id));
             setCurrentEditedId(null);
             setFormData(initialAddressFormData);
-            toast("Address updated successfully");
+            toast({
+              title: "Address updated successfully",
+            });
           }
         })
       : dispatch(
@@ -62,7 +67,9 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
           if (data?.payload?.success) {
             dispatch(fetchAllAddresses(user?.id));
             setFormData(initialAddressFormData);
-            toast("Address added successfully");
+            toast({
+              title: "Address added successfully",
+            });
           }
         });
   }

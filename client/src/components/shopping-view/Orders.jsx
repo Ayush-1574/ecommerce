@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import ShoppingOrderDetailsView from "./product-details";
+import ShoppingOrderDetailsView from "./order-details";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllOrdersByUserId,
@@ -23,21 +23,21 @@ function ShoppingOrders() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-//  const { orderList, orderDetails } = useSelector((state) => state.shopOrder);
+  const { orderList, orderDetails } = useSelector((state) => state.shopOrder);
 
-  // function handleFetchOrderDetails(getId) {
-  //   dispatch(getOrderDetails(getId));
-  // }
+  function handleFetchOrderDetails(getId) {
+    dispatch(getOrderDetails(getId));
+  }
 
   useEffect(() => {
     dispatch(getAllOrdersByUserId(user?.id));
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (orderDetails !== null) setOpenDetailsDialog(true);
-  // }, [orderDetails]);
+  useEffect(() => {
+    if (orderDetails !== null) setOpenDetailsDialog(true);
+  }, [orderDetails]);
 
-  // console.log(orderDetails, "orderDetails");
+  console.log(orderDetails, "orderDetails");
 
   return (
     <Card>
@@ -57,7 +57,7 @@ function ShoppingOrders() {
               </TableHead>
             </TableRow>
           </TableHeader>
-          {/* <TableBody>
+          <TableBody>
             {orderList && orderList.length > 0
               ? orderList.map((orderItem) => (
                   <TableRow>
@@ -98,7 +98,7 @@ function ShoppingOrders() {
                   </TableRow>
                 ))
               : null}
-          </TableBody> */}
+          </TableBody>
         </Table>
       </CardContent>
     </Card>
