@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { deleteProduct } from "@/store/admin/product-slice"
+import { deleteProduct } from "@/store/admin/products-slice"
 
 
 

@@ -1,11 +1,5 @@
-import React from "react"
-
-const Features = () => {
-    return (
-        <div>
-            Admin Features
-        </div>
-    )
+function AdminFeatures() {
+  return <div>admin features</div>;
 }
 
-export default Features
+export default AdminFeatures;

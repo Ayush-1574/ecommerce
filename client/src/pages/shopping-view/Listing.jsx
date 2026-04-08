@@ -1,6 +1,6 @@
 import ProductFilter from "@/components/shopping-view/filter";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
-import ShoppingProductTile from "@/components/shopping-view/ShoppingProductile";
+import ShoppingProductTile from "@/components/shopping-view/ShoppingProductile.jsx";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,13 +9,13 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import { sortOptions } from "@/config";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import {
   fetchAllFilteredProducts,
   fetchProductDetails,
-} from "@/store/shop/product-slice";
+} from "@/store/shop/products-slice";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -48,7 +48,7 @@ function ShoppingListing() {
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
- 
+
 
   const categorySearchParam = searchParams.get("category");
 
@@ -94,8 +94,7 @@ function ShoppingListing() {
       if (indexOfCurrentItem > -1) {
         const getQuantity = getCartItems[indexOfCurrentItem].quantity;
         if (getQuantity + 1 > getTotalStock) {
-           toast(`Only ${getQuantity} quantity can be added for this item`)
-        
+          toast(`Only ${getQuantity} quantity can be added for this item`);
 
           return;
         }
@@ -111,7 +110,7 @@ function ShoppingListing() {
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
-       toast("Product Added to ccart")
+        toast("Product is added to cart");
       }
     });
   }
