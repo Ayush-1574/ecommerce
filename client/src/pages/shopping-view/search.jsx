@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { Search } from "lucide-react";
 
 function SearchProducts() {
   const [keyword, setKeyword] = useState("");
@@ -19,9 +20,7 @@ function SearchProducts() {
   const dispatch = useDispatch();
   const { searchResults } = useSelector((state) => state.shopSearch);
   const { productDetails } = useSelector((state) => state.shopProducts);
-
   const { user } = useSelector((state) => state.auth);
-
   const { cartItems } = useSelector((state) => state.shopCart);
 
   useEffect(() => {
@@ -37,7 +36,6 @@ function SearchProducts() {
   }, [keyword]);
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
-    console.log(cartItems);
     let getCartItems = cartItems.items || [];
 
     if (getCartItems.length) {
@@ -48,7 +46,6 @@ function SearchProducts() {
         const getQuantity = getCartItems[indexOfCurrentItem].quantity;
         if (getQuantity + 1 > getTotalStock) {
           toast(`Only ${getQuantity} quantity can be added for this item`);
-
           return;
         }
       }
@@ -69,7 +66,6 @@ function SearchProducts() {
   }
 
   function handleGetProductDetails(getCurrentProductId) {
-    console.log(getCurrentProductId);
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
@@ -77,27 +73,35 @@ function SearchProducts() {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
 
-  console.log(searchResults, "searchResults");
-
   return (
-    <div className="container mx-auto md:px-6 px-4 py-8">
-      <div className="flex justify-center mb-8">
-        <div className="w-full flex items-center">
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-center mb-10">
+        <div className="w-full max-w-xl relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             value={keyword}
             name="keyword"
             onChange={(event) => setKeyword(event.target.value)}
-            className="py-6"
-            placeholder="Search Products..."
+            className="pl-12 h-12 rounded-xl text-base border-muted-foreground/20 focus:border-primary"
+            placeholder="Search products..."
           />
         </div>
       </div>
-      {!searchResults.length ? (
-        <h1 className="text-5xl font-extrabold">No result found!</h1>
+      {keyword.trim().length > 3 && !searchResults.length ? (
+        <div className="text-center py-16">
+          <Search className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-muted-foreground">
+            No results found
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Try searching with different keywords
+          </p>
+        </div>
       ) : null}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {searchResults.map((item) => (
           <ShoppingProductTile
+            key={item._id}
             handleAddtoCart={handleAddtoCart}
             product={item}
             handleGetProductDetails={handleGetProductDetails}

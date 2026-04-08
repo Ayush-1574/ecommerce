@@ -23,17 +23,12 @@ import { useSearchParams } from "react-router-dom";
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
-
   for (const [key, value] of Object.entries(filterParams)) {
     if (Array.isArray(value) && value.length > 0) {
       const paramValue = value.join(",");
-
       queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
     }
   }
-
-  console.log(queryParams, "queryParams");
-
   return queryParams.join("&");
 }
 
@@ -48,7 +43,6 @@ function ShoppingListing() {
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-
 
   const categorySearchParam = searchParams.get("category");
 
@@ -79,12 +73,10 @@ function ShoppingListing() {
   }
 
   function handleGetProductDetails(getCurrentProductId) {
-    console.log(getCurrentProductId);
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
-    console.log(cartItems);
     let getCartItems = cartItems.items || [];
 
     if (getCartItems.length) {
@@ -95,7 +87,6 @@ function ShoppingListing() {
         const getQuantity = getCartItems[indexOfCurrentItem].quantity;
         if (getQuantity + 1 > getTotalStock) {
           toast(`Only ${getQuantity} quantity can be added for this item`);
-
           return;
         }
       }
@@ -138,27 +129,27 @@ function ShoppingListing() {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
 
-  console.log(productList, "productListproductListproductList");
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
-      <ProductFilter filters={filters} handleFilter={handleFilter} />
-      <div className="bg-background w-full rounded-lg shadow-sm">
-        <div className="p-4 border-b flex items-center justify-between">
-          <h2 className="text-lg font-extrabold">All Products</h2>
-          <div className="flex items-center gap-3">
-            <span className="text-muted-foreground">
-              {productList?.length} Products
-            </span>
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6">
+        <ProductFilter filters={filters} handleFilter={handleFilter} />
+        <div className="bg-card w-full rounded-2xl shadow-sm border">
+          <div className="p-5 border-b flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-bold tracking-tight">All Products</h2>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {productList?.length || 0} products found
+              </p>
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-2 rounded-lg"
                 >
-                  <ArrowUpDownIcon className="h-4 w-4" />
-                  <span>Sort by</span>
+                  <ArrowUpDownIcon className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Sort by</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[200px]">
@@ -175,17 +166,18 @@ function ShoppingListing() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {productList && productList.length > 0
-            ? productList.map((productItem) => (
-                <ShoppingProductTile
-                  handleGetProductDetails={handleGetProductDetails}
-                  product={productItem}
-                  handleAddtoCart={handleAddtoCart}
-                />
-              ))
-            : null}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 p-5">
+            {productList && productList.length > 0
+              ? productList.map((productItem) => (
+                  <ShoppingProductTile
+                    key={productItem._id}
+                    handleGetProductDetails={handleGetProductDetails}
+                    product={productItem}
+                    handleAddtoCart={handleAddtoCart}
+                  />
+                ))
+              : null}
+          </div>
         </div>
       </div>
       <ProductDetailsDialog

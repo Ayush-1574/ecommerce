@@ -1,7 +1,4 @@
 import { Button } from "@/components/ui/button";
-import bannerOne from "../../assets/banner-1.webp";
-import bannerTwo from "../../assets/banner-2.webp";
-import bannerThree from "../../assets/banner-3.webp";
 import {
   Airplay,
   BabyIcon,
@@ -47,27 +44,24 @@ const brandsWithIcon = [
   { id: "zara", label: "Zara", icon: Images },
   { id: "h&m", label: "H&M", icon: Heater },
 ];
+
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts
   );
   const { featureImageList } = useSelector((state) => state.commonFeature);
-
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-
   const { user } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
 
   function handleNavigateToListingPage(getCurrentItem, section) {
     sessionStorage.removeItem("filters");
     const currentFilter = {
       [section]: [getCurrentItem.id],
     };
-
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
     navigate(`/shop/listing`);
   }
@@ -99,7 +93,6 @@ function ShoppingHome() {
     const timer = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
     }, 15000);
-
     return () => clearInterval(timer);
   }, [featureImageList]);
 
@@ -112,26 +105,45 @@ function ShoppingHome() {
     );
   }, [dispatch]);
 
-  console.log(productList, "productList");
-
   useEffect(() => {
     dispatch(getFeatureImages());
   }, [dispatch]);
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="relative w-full h-[600px] overflow-hidden">
+      {/* Hero Banner */}
+      <div className="relative w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] overflow-hidden">
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((slide, index) => (
               <img
                 src={slide?.image}
                 key={index}
                 className={`${
-                  index === currentSlide ? "opacity-100" : "opacity-0"
-                } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+                  index === currentSlide ? "opacity-100 scale-100" : "opacity-0 scale-105"
+                } absolute top-0 left-0 w-full h-full object-cover transition-all duration-1000 ease-out`}
               />
             ))
           : null}
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
+        {/* Slide indicators */}
+        {featureImageList && featureImageList.length > 1 && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {featureImageList.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentSlide
+                    ? "bg-white w-6"
+                    : "bg-white/50 hover:bg-white/75"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+
         <Button
           variant="outline"
           size="icon"
@@ -142,9 +154,9 @@ function ShoppingHome() {
                 featureImageList.length
             )
           }
-          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
+          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/90 hover:bg-white border-0 shadow-lg rounded-full w-10 h-10 backdrop-blur-sm"
         >
-          <ChevronLeftIcon className="w-4 h-4" />
+          <ChevronLeftIcon className="w-5 h-5" />
         </Button>
         <Button
           variant="outline"
@@ -154,27 +166,39 @@ function ShoppingHome() {
               (prevSlide) => (prevSlide + 1) % featureImageList.length
             )
           }
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
+          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/90 hover:bg-white border-0 shadow-lg rounded-full w-10 h-10 backdrop-blur-sm"
         >
-          <ChevronRightIcon className="w-4 h-4" />
+          <ChevronRightIcon className="w-5 h-5" />
         </Button>
       </div>
-      <section className="py-12 bg-gray-50">
+
+      {/* Shop by Category */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Shop by category
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Shop by Category
+            </h2>
+            <p className="text-muted-foreground mt-2">
+              Browse our curated collections
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {categoriesWithIcon.map((categoryItem) => (
               <Card
+                key={categoryItem.id}
                 onClick={() =>
                   handleNavigateToListingPage(categoryItem, "category")
                 }
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+                className="cursor-pointer group border-0 shadow-sm hover:shadow-lg transition-all duration-300 rounded-2xl overflow-hidden hover:-translate-y-1"
               >
-                <CardContent className="flex flex-col items-center justify-center p-6">
-                  <categoryItem.icon className="w-12 h-12 mb-4 text-primary" />
-                  <span className="font-bold">{categoryItem.label}</span>
+                <CardContent className="flex flex-col items-center justify-center p-6 sm:p-8">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/5 flex items-center justify-center mb-4 group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-300">
+                    <categoryItem.icon className="w-7 h-7 text-primary" />
+                  </div>
+                  <span className="font-semibold text-sm">
+                    {categoryItem.label}
+                  </span>
                 </CardContent>
               </Card>
             ))}
@@ -182,18 +206,33 @@ function ShoppingHome() {
         </div>
       </section>
 
-      <section className="py-12 bg-gray-50">
+      {/* Shop by Brand */}
+      <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Shop by Brand</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Shop by Brand
+            </h2>
+            <p className="text-muted-foreground mt-2">
+              Find your favorite brands
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {brandsWithIcon.map((brandItem) => (
               <Card
-                onClick={() => handleNavigateToListingPage(brandItem, "brand")}
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+                key={brandItem.id}
+                onClick={() =>
+                  handleNavigateToListingPage(brandItem, "brand")
+                }
+                className="cursor-pointer group border-0 shadow-sm hover:shadow-lg transition-all duration-300 rounded-2xl overflow-hidden hover:-translate-y-1"
               >
                 <CardContent className="flex flex-col items-center justify-center p-6">
-                  <brandItem.icon className="w-12 h-12 mb-4 text-primary" />
-                  <span className="font-bold">{brandItem.label}</span>
+                  <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center mb-3 group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-300">
+                    <brandItem.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <span className="font-semibold text-sm">
+                    {brandItem.label}
+                  </span>
                 </CardContent>
               </Card>
             ))}
@@ -201,15 +240,22 @@ function ShoppingHome() {
         </div>
       </section>
 
-      <section className="py-12">
+      {/* Featured Products */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Feature Products
-          </h2>
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Featured Products
+            </h2>
+            <p className="text-muted-foreground mt-2">
+              Handpicked just for you
+            </p>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {productList && productList.length > 0
               ? productList.map((productItem) => (
                   <ShoppingProductTile
+                    key={productItem._id}
                     handleGetProductDetails={handleGetProductDetails}
                     product={productItem}
                     handleAddtoCart={handleAddtoCart}
@@ -219,6 +265,7 @@ function ShoppingHome() {
           </div>
         </div>
       </section>
+
       <ProductDetailsDialog
         open={openDetailsDialog}
         setOpen={setOpenDetailsDialog}

@@ -17,7 +17,6 @@ function AuthRegister() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-
   function onSubmit(event) {
     event.preventDefault();
     dispatch(registerUser(formData)).then((data) => {
@@ -30,31 +29,34 @@ function AuthRegister() {
     });
   }
 
-  console.log(formData);
-
   return (
-    <div className="mx-auto w-full max-w-md space-y-6">
-      <div className="text-center">
+    <div className="mx-auto w-full max-w-md space-y-8">
+      <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Create new account
+          Create your account
         </h1>
-        <p className="mt-2">
-          Already have an account
-          <Link
-            className="font-medium ml-2 text-primary hover:underline"
-            to="/auth/login"
-          >
-            Login
-          </Link>
+        <p className="text-muted-foreground">
+          Join ShopVerse and start shopping today
         </p>
       </div>
-      <CommonForm
-        formControls={registerFormControls}
-        buttonText={"Sign Up"}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={onSubmit}
-      />
+      <div className="bg-card rounded-2xl border shadow-sm p-8">
+        <CommonForm
+          formControls={registerFormControls}
+          buttonText={"Create Account"}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={onSubmit}
+        />
+      </div>
+      <p className="text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link
+          className="font-semibold text-primary hover:underline underline-offset-4 transition-colors"
+          to="/auth/login"
+        >
+          Sign in
+        </Link>
+      </p>
     </div>
   );
 }
