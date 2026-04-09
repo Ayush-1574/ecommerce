@@ -1,8 +1,5 @@
-const paypal = require("../../helpers/paypal");
-const Order = require("../../models/Order");
-const Cart = require("../../models/Cart");
-const Product = require("../../models/Product");
-const { Op } = require("sequelize");
+import prisma from "../../lib/prisma.js";
+import paypal from "../../middlewares/paypal.js";
 
 const createOrder = async (req, res) => {
   try {
@@ -27,8 +24,8 @@ const createOrder = async (req, res) => {
         payment_method: "paypal",
       },
       redirect_urls: {
-        return_url: "http://localhost:5173/shop/paypal-return",
-        cancel_url: "http://localhost:5173/shop/paypal-cancel",
+        return_url: process.env.CLIENT_URL || "http://localhost:5173/shop/paypal-return",
+        cancel_url: process.env.CLIENT_URL || "http://localhost:5173/shop/paypal-cancel",
       },
       transactions: [
         {
@@ -36,16 +33,16 @@ const createOrder = async (req, res) => {
             items: cartItems.map((item) => ({
               name: item.title,
               sku: item.productId,
-              price: item.price.toFixed(2),
+              price: parseFloat(item.price).toFixed(2),
               currency: "USD",
               quantity: item.quantity,
             })),
           },
           amount: {
             currency: "USD",
-            total: totalAmount.toFixed(2),
+            total: parseFloat(totalAmount).toFixed(2),
           },
-          description: "description",
+          description: "E-commerce Order",
         },
       ],
     };
@@ -53,25 +50,25 @@ const createOrder = async (req, res) => {
     paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
       if (error) {
         console.log(error);
-
         return res.status(500).json({
           success: false,
           message: "Error while creating paypal payment",
         });
       } else {
-        const newlyCreatedOrder = await Order.create({
-          userId,
-          cartId,
-          cartItems,
-          addressInfo,
-          orderStatus,
-          paymentMethod,
-          paymentStatus,
-          totalAmount,
-          orderDate,
-          orderUpdateDate,
-          paymentId,
-          payerId,
+        const newlyCreatedOrder = await prisma.order.create({
+          data: {
+            userId,
+            cartId,
+            cartItems: cartItems,
+            addressInfo: addressInfo,
+            orderStatus: orderStatus || "pending",
+            paymentMethod,
+            paymentStatus,
+            totalAmount: totalAmount,
+            orderDate: new Date(),
+            paymentId,
+            payerId,
+          },
         });
 
         const approvalURL = paymentInfo.links.find(
@@ -89,7 +86,7 @@ const createOrder = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
@@ -98,42 +95,60 @@ const capturePayment = async (req, res) => {
   try {
     const { paymentId, payerId, orderId } = req.body;
 
-    let order = await Order.findByPk(orderId);
+    let order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
 
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: "Order can not be found",
+        message: "Order cannot be found",
       });
     }
 
-    await order.update({
-      paymentStatus: "paid",
-      orderStatus: "confirmed",
-      paymentId: paymentId,
-      payerId: payerId,
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        paymentStatus: "paid",
+        orderStatus: "confirmed",
+        paymentId: paymentId,
+        payerId: payerId,
+      },
     });
 
     const cartItems = order.cartItems || [];
 
     for (let item of cartItems) {
-      let product = await Product.findByPk(item.productId);
+      let product = await prisma.product.findUnique({
+        where: { id: item.productId },
+      });
 
       if (!product) {
         return res.status(404).json({
           success: false,
-          message: `Not enough stock for this product ${product.title}`,
+          message: `Product not found: ${item.title}`,
         });
       }
 
-      product.totalStock -= item.quantity;
-      await product.save();
+      const newStock = (product.totalStock || 0) - item.quantity;
+      if (newStock < 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Not enough stock for product: ${product.title}`,
+        });
+      }
+
+      await prisma.product.update({
+        where: { id: item.productId },
+        data: { totalStock: newStock },
+      });
     }
 
     const getCartId = order.cartId;
-    const cart = await Cart.findOne({ where: { id: getCartId } });
-    if (cart) {
-      await cart.destroy();
+    if (getCartId) {
+      await prisma.cart.delete({
+        where: { id: getCartId },
+      }).catch(() => {}); // Silently catch if cart doesn't exist
     }
 
     res.status(200).json({
@@ -145,7 +160,7 @@ const capturePayment = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
@@ -154,14 +169,17 @@ const getAllOrdersByUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const orders = await Order.findAll({ where: { userId } });
-
-    if (!orders.length) {
-      return res.status(404).json({
+    if (!userId) {
+      return res.status(400).json({
         success: false,
-        message: "No orders found!",
+        message: "User ID is required!",
       });
     }
+
+    const orders = await prisma.order.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    });
 
     res.status(200).json({
       success: true,
@@ -171,7 +189,7 @@ const getAllOrdersByUser = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
@@ -180,7 +198,9 @@ const getOrderDetails = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const order = await Order.findByPk(id);
+    const order = await prisma.order.findUnique({
+      where: { id },
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -197,14 +217,9 @@ const getOrderDetails = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-module.exports = {
-  createOrder,
-  capturePayment,
-  getAllOrdersByUser,
-  getOrderDetails,
-};
+export { createOrder, capturePayment, getAllOrdersByUser, getOrderDetails };

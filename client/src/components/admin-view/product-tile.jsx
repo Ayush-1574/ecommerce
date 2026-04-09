@@ -15,32 +15,33 @@ import { deleteProduct } from "@/store/admin/products-slice"
 
 
 
-function AdminproductTile({productItems , setOpenCreateProductDialog,setCurrentEditedId, setFormData ,handleDelete }){
+function AdminproductTile({product , setOpenCreateProductsDialog,setCurrentEditedId, setFormData, setUploadedImageUrl ,handleDelete }){
 
      const dispatch = useDispatch()
 
 
     const handleEdit = () => {
-    setOpenCreateProductDialog(true)
-    setCurrentEditedId(productItems._id)
-    setFormData(productItems)
+    setOpenCreateProductsDialog(true)
+    setCurrentEditedId(product.id)
+    setFormData(product)
+    setUploadedImageUrl(product.image)
 }
  
    
  
-    if(!productItems){return null}
+    if(!product){return null}
     return (
         <Card w-full max-w-sm mx-auto>
             <div>
             <div className="relative">
-                <img src={productItems?.image} alt={productItems?.title} className="w-full h-[300px] object-cover rounded-t-lg" />
+                <img src={product?.image} alt={product?.title} className="w-full h-[300px] object-cover rounded-t-lg" />
             </div>
             <CardContent>
-                <h2 className = "text-xl font-bold mb-2">{productItems?.title}</h2>
+                <h2 className = "text-xl font-bold mb-2">{product?.title}</h2>
                 <div className = "flex justify-between items-center mb-2">
-                    <span className = {`${productItems.salePrice > 0 ? 'line-through' : ''}text-lg font-semibold text-primary`}>${productItems.price}</span>
+                    <span className = {`${product.salePrice > 0 ? 'line-through' : ''}text-lg font-semibold text-primary`}>${product.price}</span>
                     {
-                        productItems.salePrice > 0 ? <span className = "text-lg font-bold">${productItems.salePrice}</span> : null
+                        product.salePrice > 0 ? <span className = "text-lg font-bold">${product.salePrice}</span> : null
                     }
                     
                 </div>
@@ -54,7 +55,7 @@ function AdminproductTile({productItems , setOpenCreateProductDialog,setCurrentE
             </Button>
             <Button 
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition-colors"
-                onClick={() => handleDelete(productItems?._id)}
+                onClick={() => handleDelete(product?.id)}
             >
                 Delete
             </Button>

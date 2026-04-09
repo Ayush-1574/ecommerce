@@ -1,7 +1,4 @@
-const Order = require("../../models/Order");
-const Product = require("../../models/Product");
-const Review = require("../../models/Review");
-const { Op } = require("sequelize");
+import prisma from "../../lib/prisma.js";
 
 const addProductReview = async (req, res) => {
   try {
@@ -9,7 +6,7 @@ const addProductReview = async (req, res) => {
       req.body;
 
     // Check if user has ordered this product
-    const order = await Order.findOne({
+    const order = await prisma.order.findFirst({
       where: {
         userId,
       },
@@ -33,38 +30,39 @@ const addProductReview = async (req, res) => {
       });
     }
 
-    const checkExistinfReview = await Review.findOne({
+    const checkExistingReview = await prisma.review.findFirst({
       where: {
         productId,
         userId,
       },
     });
 
-    if (checkExistinfReview) {
+    if (checkExistingReview) {
       return res.status(400).json({
         success: false,
         message: "You already reviewed this product!",
       });
     }
 
-    const newReview = await Review.create({
-      productId,
-      userId,
-      userName,
-      reviewMessage,
-      reviewValue,
+    const newReview = await prisma.review.create({
+      data: {
+        productId,
+        userId,
+        userName,
+        reviewMessage,
+        reviewValue,
+      },
     });
 
-    const reviews = await Review.findAll({ where: { productId } });
+    const reviews = await prisma.review.findMany({ where: { productId } });
     const totalReviewsLength = reviews.length;
     const averageReview =
-      reviews.reduce((sum, reviewItem) => sum + reviewItem.reviewValue, 0) /
+      reviews.reduce((sum, reviewItem) => sum + (reviewItem.reviewValue || 0), 0) /
       totalReviewsLength;
 
-    await Product.findByPk(productId).then((product) => {
-      if (product) {
-        product.update({ averageReview });
-      }
+    await prisma.product.update({
+      where: { id: productId },
+      data: { averageReview },
     });
 
     res.status(201).json({
@@ -84,7 +82,7 @@ const getProductReviews = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    const reviews = await Review.findAll({ where: { productId } });
+    const reviews = await prisma.review.findMany({ where: { productId } });
     res.status(200).json({
       success: true,
       data: reviews,
@@ -98,4 +96,4 @@ const getProductReviews = async (req, res) => {
   }
 };
 
-module.exports = { addProductReview, getProductReviews };
+export { addProductReview, getProductReviews };

@@ -18,7 +18,7 @@ function AddressCard({
           : null
       }
       className={`cursor-pointer transition-all duration-200 rounded-xl hover:shadow-md ${
-        selectedId?._id === addressInfo?._id
+        selectedId?.id === addressInfo?.id
           ? "ring-2 ring-primary border-primary shadow-md"
           : "hover:border-muted-foreground/30"
       }`}

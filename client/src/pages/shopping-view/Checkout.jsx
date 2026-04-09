@@ -41,7 +41,7 @@ function ShoppingCheckout() {
 
     const orderData = {
       userId: user?.id,
-      cartId: cartItems?._id,
+      cartId: cartItems?.id,
       cartItems: cartItems.items.map((singleCartItem) => ({
         productId: singleCartItem?.productId,
         title: singleCartItem?.title,
@@ -53,7 +53,7 @@ function ShoppingCheckout() {
         quantity: singleCartItem?.quantity,
       })),
       addressInfo: {
-        addressId: currentSelectedAddress?._id,
+        addressId: currentSelectedAddress?.id,
         address: currentSelectedAddress?.address,
         city: currentSelectedAddress?.city,
         pincode: currentSelectedAddress?.pincode,

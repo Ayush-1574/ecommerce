@@ -1,5 +1,5 @@
-const { Prisma } = require("@prisma/client");
-const prisma = require("../../lib/prisma");
+import { Prisma } from "@prisma/client";
+import prisma from "../../lib/prisma.js";
 
 const getFilteredProducts = async (req, res) => {
   try {
@@ -83,4 +83,4 @@ const getProductDetails = async (req, res) => {
   }
 };
 
-module.exports = { getFilteredProducts, getProductDetails };
+export { getFilteredProducts, getProductDetails };

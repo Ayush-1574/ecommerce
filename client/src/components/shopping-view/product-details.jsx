@@ -67,26 +67,35 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   }
 
   function handleAddReview() {
+    if (rating === 0) {
+      toast.warning("Please select a star rating before submitting.");
+      return;
+    }
+
     dispatch(
       addReview({
-        productId: productDetails?._id,
+        productId: productDetails?.id,
         userId: user?.id,
         userName: user?.userName,
         reviewMessage: reviewMsg,
         reviewValue: rating,
       })
     ).then((data) => {
-      if (data.payload.success) {
+      if (data.meta.requestStatus === "fulfilled") {
+        // Success
         setRating(0);
         setReviewMsg("");
-        dispatch(getReviews(productDetails?._id));
-        toast("Review added successfully!");
+        dispatch(getReviews(productDetails?.id));
+        toast.success("Review added successfully!");
+      } else {
+        // Rejected — show the server's error message
+        toast.error(data.payload || "Could not submit review.");
       }
     });
   }
 
   useEffect(() => {
-    if (productDetails !== null) dispatch(getReviews(productDetails?._id));
+    if (productDetails !== null) dispatch(getReviews(productDetails?.id));
   }, [productDetails]);
 
   console.log(reviews, "reviews");
@@ -148,7 +157,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 className="w-full"
                 onClick={() =>
                   handleAddToCart(
-                    productDetails?._id,
+                    productDetails?.id,
                     productDetails?.totalStock
                   )
                 }
@@ -202,7 +211,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               />
               <Button
                 onClick={handleAddReview}
-                disabled={reviewMsg.trim() === ""}
+                disabled={reviewMsg.trim() === "" || rating === 0}
               >
                 Submit
               </Button>

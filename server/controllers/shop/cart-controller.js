@@ -1,4 +1,4 @@
-const prisma = require("../../lib/prisma");
+import prisma from "../../lib/prisma.js";
 
 const addToCart = async (req, res) => {
   try {
@@ -258,9 +258,4 @@ const deleteCartItem = async (req, res) => {
   }
 };
 
-module.exports = {
-  addToCart,
-  updateCartItemQty,
-  deleteCartItem,
-  fetchCartItems,
-};
+export { addToCart, updateCartItemQty, deleteCartItem, fetchCartItems };

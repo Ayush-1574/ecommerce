@@ -1,5 +1,5 @@
-const { imageUploadUtil } = require("../../helpers/cloudinary");
-const prisma = require("../../lib/prisma");
+import { imageUploadUtil } from "../../middlewares/cloudinary.js";
+import prisma from "../../lib/prisma.js";
 
 const handleImageUpload = async (req, res) => {
   try {
@@ -46,8 +46,8 @@ const addProduct = async (req, res) => {
         brand,
         price: price ? parseFloat(price) : null,
         salePrice: salePrice ? parseFloat(salePrice) : null,
-        totalStock,
-        averageReview,
+        totalStock: totalStock ? parseInt(totalStock) : 0,
+        averageReview: averageReview ? parseFloat(averageReview) : 0,
       },
     });
 
@@ -121,9 +121,9 @@ const editProduct = async (req, res) => {
             : salePrice
             ? parseFloat(salePrice)
             : findProduct.salePrice,
-        totalStock: totalStock || findProduct.totalStock,
+        totalStock: totalStock ? parseInt(totalStock) : findProduct.totalStock,
         image: image || findProduct.image,
-        averageReview: averageReview || findProduct.averageReview,
+        averageReview: averageReview ? parseFloat(averageReview) : findProduct.averageReview,
       },
     });
 
@@ -171,10 +171,4 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-module.exports = {
-  handleImageUpload,
-  addProduct,
-  fetchAllProducts,
-  editProduct,
-  deleteProduct,
-};
+export { handleImageUpload, addProduct, fetchAllProducts, editProduct, deleteProduct };

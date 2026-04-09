@@ -59,23 +59,29 @@ function AdminOrdersView() {
           <TableBody>
             {orderList && orderList.length > 0
               ? orderList.map((orderItem) => (
-                  <TableRow>
-                    <TableCell>{orderItem?._id}</TableCell>
+                  <TableRow key={orderItem?.id}>
+                    <TableCell>{orderItem?.id}</TableCell>
                     <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
                     <TableCell>
-                      <Badge
-                        className={`py-1 px-3 ${
-                          orderItem?.orderStatus === "confirmed"
-                            ? "bg-green-500"
-                            : orderItem?.orderStatus === "rejected"
-                            ? "bg-red-600"
-                            : "bg-black"
-                        }`}
-                      >
-                        {orderItem?.orderStatus}
-                      </Badge>
+                      {orderItem?.orderStatus ? (
+                        <Badge
+                          className={`py-1 px-4 font-semibold text-white ${
+                            orderItem?.orderStatus === "confirmed"
+                              ? "bg-green-600 hover:bg-green-700"
+                              : orderItem?.orderStatus === "rejected"
+                              ? "bg-red-600 hover:bg-red-700"
+                              : orderItem?.orderStatus === "pending"
+                              ? "bg-yellow-600 hover:bg-yellow-700"
+                              : "bg-blue-600 hover:bg-blue-700"
+                          }`}
+                        >
+                          {orderItem.orderStatus.charAt(0).toUpperCase() + orderItem.orderStatus.slice(1)}
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-gray-400">Unknown</Badge>
+                      )}
                     </TableCell>
-                    <TableCell>${orderItem?.totalAmount}</TableCell>
+                    <TableCell>${parseFloat(orderItem?.totalAmount)?.toFixed(2)}</TableCell>
                     <TableCell>
                       <Dialog
                         open={openDetailsDialog}
@@ -86,7 +92,7 @@ function AdminOrdersView() {
                       >
                         <Button
                           onClick={() =>
-                            handleFetchOrderDetails(orderItem?._id)
+                            handleFetchOrderDetails(orderItem?.id)
                           }
                         >
                           View Details

@@ -1,4 +1,4 @@
-const Address = require("../../models/Address");
+import prisma from "../../lib/prisma.js";
 
 const addAddress = async (req, res) => {
   try {
@@ -11,13 +11,15 @@ const addAddress = async (req, res) => {
       });
     }
 
-    const newlyCreatedAddress = await Address.create({
-      userId,
-      address,
-      city,
-      pincode,
-      notes,
-      phone,
+    const newlyCreatedAddress = await prisma.address.create({
+      data: {
+        userId,
+        address,
+        city,
+        pincode,
+        notes,
+        phone,
+      },
     });
 
     res.status(201).json({
@@ -43,7 +45,9 @@ const fetchAllAddress = async (req, res) => {
       });
     }
 
-    const addressList = await Address.findAll({ where: { userId } });
+    const addressList = await prisma.address.findMany({
+      where: { userId },
+    });
 
     res.status(200).json({
       success: true,
@@ -70,7 +74,7 @@ const editAddress = async (req, res) => {
       });
     }
 
-    const address = await Address.findOne({
+    const address = await prisma.address.findFirst({
       where: {
         id: addressId,
         userId,
@@ -84,11 +88,14 @@ const editAddress = async (req, res) => {
       });
     }
 
-    await address.update(formData);
+    const updatedAddress = await prisma.address.update({
+      where: { id: addressId },
+      data: formData,
+    });
 
     res.status(200).json({
       success: true,
-      data: address,
+      data: updatedAddress,
     });
   } catch (e) {
     console.log(e);
@@ -109,7 +116,7 @@ const deleteAddress = async (req, res) => {
       });
     }
 
-    const address = await Address.findOne({
+    const address = await prisma.address.findFirst({
       where: { id: addressId, userId },
     });
 
@@ -120,7 +127,9 @@ const deleteAddress = async (req, res) => {
       });
     }
 
-    await address.destroy();
+    await prisma.address.delete({
+      where: { id: addressId },
+    });
 
     res.status(200).json({
       success: true,
@@ -135,4 +144,4 @@ const deleteAddress = async (req, res) => {
   }
 };
 
-module.exports = { addAddress, editAddress, fetchAllAddress, deleteAddress };
+export { addAddress, editAddress, fetchAllAddress, deleteAddress };

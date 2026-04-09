@@ -1,8 +1,10 @@
-const Order = require("../../models/Order");
+import prisma from "../../lib/prisma.js";
 
 const getAllOrdersOfAllUsers = async (req, res) => {
   try {
-    const orders = await Order.findAll();
+    const orders = await prisma.order.findMany({
+      orderBy: { createdAt: "desc" },
+    });
 
     if (!orders.length) {
       return res.status(404).json({
@@ -19,7 +21,7 @@ const getAllOrdersOfAllUsers = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
@@ -28,7 +30,9 @@ const getOrderDetailsForAdmin = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const order = await Order.findByPk(id);
+    const order = await prisma.order.findUnique({
+      where: { id },
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -45,7 +49,7 @@ const getOrderDetailsForAdmin = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
@@ -55,7 +59,9 @@ const updateOrderStatus = async (req, res) => {
     const { id } = req.params;
     const { orderStatus } = req.body;
 
-    const order = await Order.findByPk(id);
+    const order = await prisma.order.findUnique({
+      where: { id },
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -64,7 +70,10 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    await order.update({ orderStatus });
+    await prisma.order.update({
+      where: { id },
+      data: { orderStatus },
+    });
 
     res.status(200).json({
       success: true,
@@ -74,13 +83,9 @@ const updateOrderStatus = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-module.exports = {
-  getAllOrdersOfAllUsers,
-  getOrderDetailsForAdmin,
-  updateOrderStatus,
-};
+export { getAllOrdersOfAllUsers, getOrderDetailsForAdmin, updateOrderStatus };

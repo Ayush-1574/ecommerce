@@ -1,23 +1,22 @@
-const { Op } = require("sequelize");
-const Product = require("../../models/Product");
+import prisma from "../../lib/prisma.js";
 
 const searchProducts = async (req, res) => {
   try {
     const { keyword } = req.params;
     if (!keyword || typeof keyword !== "string") {
       return res.status(400).json({
-        succes: false,
+        success: false,
         message: "Keyword is required and must be in string format",
       });
     }
 
-    const searchResults = await Product.findAll({
+    const searchResults = await prisma.product.findMany({
       where: {
-        [Op.or]: [
-          { title: { [Op.iLike]: `%${keyword}%` } },
-          { description: { [Op.iLike]: `%${keyword}%` } },
-          { category: { [Op.iLike]: `%${keyword}%` } },
-          { brand: { [Op.iLike]: `%${keyword}%` } },
+        OR: [
+          { title: { contains: keyword, mode: "insensitive" } },
+          { description: { contains: keyword, mode: "insensitive" } },
+          { category: { contains: keyword, mode: "insensitive" } },
+          { brand: { contains: keyword, mode: "insensitive" } },
         ],
       },
     });
@@ -35,4 +34,4 @@ const searchProducts = async (req, res) => {
   }
 };
 
-module.exports = { searchProducts };
+export { searchProducts };

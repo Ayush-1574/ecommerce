@@ -73,9 +73,7 @@ function ProductImageUpload({
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        className={`${
-          isEditMode ? "opacity-60" : ""
-        } border-2 border-dashed rounded-lg p-4`}
+        className="border-2 border-dashed rounded-lg p-4"
       >
         <Input
           id="image-upload"
@@ -83,18 +81,34 @@ function ProductImageUpload({
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
-          disabled={isEditMode}
         />
         {!imageFile ? (
-          <Label
-            htmlFor="image-upload"
-            className={`${
-              isEditMode ? "cursor-not-allowed" : ""
-            } flex flex-col items-center justify-center h-32 cursor-pointer`}
-          >
-            <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
-            <span>Drag & drop or click to upload image</span>
-          </Label>
+          <>
+            {uploadedImageUrl && isEditMode ? (
+              <div className="flex flex-col items-center">
+                <img
+                  src={uploadedImageUrl}
+                  alt="Uploaded"
+                  className="h-32 w-32 object-cover rounded-lg mb-3"
+                />
+                <Label
+                  htmlFor="image-upload"
+                  className="flex flex-col items-center justify-center h-16 cursor-pointer text-blue-600 hover:text-blue-700"
+                >
+                  <UploadCloudIcon className="w-8 h-8 mb-1" />
+                  <span className="text-sm">Click to change image</span>
+                </Label>
+              </div>
+            ) : (
+              <Label
+                htmlFor="image-upload"
+                className="flex flex-col items-center justify-center h-32 cursor-pointer"
+              >
+                <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
+                <span>Drag & drop or click to upload image</span>
+              </Label>
+            )}
+          </>
         ) : imageLoadingState ? (
           <Skeleton className="h-10 bg-gray-100" />
         ) : (

@@ -1,6 +1,7 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
-const User = require("./User");
+// DEPRECATED: Use Prisma ORM instead of Sequelize. See prisma/schema.prisma
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
+import User from "./User.js";
 
 const Address = sequelize.define(
   "Address",
@@ -44,4 +45,4 @@ const Address = sequelize.define(
 
 Address.belongsTo(User, { foreignKey: "userId" });
 
-module.exports = Address;
+export default Address;

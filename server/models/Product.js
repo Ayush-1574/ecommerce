@@ -1,5 +1,6 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
+// DEPRECATED: Use Prisma ORM instead of Sequelize. See prisma/schema.prisma
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
 
 const Product = sequelize.define(
   "Product",
@@ -44,4 +45,4 @@ const Product = sequelize.define(
   }
 );
 
-module.exports = Product;
+export default Product;

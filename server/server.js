@@ -1,30 +1,30 @@
-require("dotenv").config();
+import "dotenv/config";
+import express from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import prisma from "./lib/prisma.js";
 
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-const prisma = require("./lib/prisma");
+import authRouter from "./routes/auth/auth-routes.js";
+import adminProductsRouter from "./routes/admin/products-routes.js";
+import adminOrderRouter from "./routes/admin/order-routes.js";
 
-const authRouter = require("./routes/auth/auth-routes");
-const adminProductsRouter = require("./routes/admin/products-routes");
-const adminOrderRouter = require("./routes/admin/order-routes");
+import shopProductsRouter from "./routes/shop/products-routes.js";
+import shopCartRouter from "./routes/shop/cart-routes.js";
+import shopAddressRouter from "./routes/shop/address-routes.js";
+import shopOrderRouter from "./routes/shop/order-routes.js";
+import shopSearchRouter from "./routes/shop/search-routes.js";
+import shopReviewRouter from "./routes/shop/review-routes.js";
 
-const shopProductsRouter = require("./routes/shop/products-routes");
-const shopCartRouter = require("./routes/shop/cart-routes");
-const shopAddressRouter = require("./routes/shop/address-routes");
-const shopOrderRouter = require("./routes/shop/order-routes");
-const shopSearchRouter = require("./routes/shop/search-routes");
-const shopReviewRouter = require("./routes/shop/review-routes");
-
-const commonFeatureRouter = require("./routes/common/feature-routes");
+import commonFeatureRouter from "./routes/common/feature-routes.js";
+import superadminRouter from "./routes/superadmin/superadmin-routes.js";
 
 // Test Prisma connection
 async function testDatabaseConnection() {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    console.log("PostgreSQL database connected successfully");
+    console.log("✓ PostgreSQL database connected successfully");
   } catch (error) {
-    console.error("Database connection error:", error);
+    console.error("✗ Database connection error:", error.message);
     process.exit(1);
   }
 }
@@ -34,9 +34,10 @@ testDatabaseConnection();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
       "Content-Type",
@@ -51,6 +52,9 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
 app.use("/api/auth", authRouter);
 app.use("/api/admin/products", adminProductsRouter);
 app.use("/api/admin/orders", adminOrderRouter);
@@ -63,5 +67,30 @@ app.use("/api/shop/search", shopSearchRouter);
 app.use("/api/shop/review", shopReviewRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
+app.use("/api/superadmin", superadminRouter);
 
-app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(500).json({
+    success: false,
+    message: "Internal server error",
+    error: process.env.NODE_ENV === "development" ? err.message : undefined,
+  });
+});
+
+// Start server
+const server = app.listen(PORT, () => {
+  console.log(`\n🚀 Server is running on port ${PORT}`);
+  console.log(`📝 Environment: ${process.env.NODE_ENV}`);
+});
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("\n\n⏹  Shutting down gracefully...");
+  server.close(async () => {
+    await prisma.$disconnect();
+    console.log("✓ Prisma Client disconnected");
+    process.exit(0);
+  });
+});

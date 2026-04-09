@@ -111,7 +111,7 @@ The server will automatically create all tables and sync the schema on first run
 - **Mongoose:** ObjectId (_id)
 - **Sequelize:** UUID (more PostgreSQL native)
 
-Update frontend code to use `user.id` instead of `user._id`
+Update frontend code to use `user.id` instead of `user.id`
 
 ### JSON Storage
 For complex nested data (cartItems, addressInfo), we use PostgreSQL JSONB:
@@ -161,17 +161,17 @@ const results = await Product.findAll({
 
 ## Manual Frontend Updates Required
 
-1. **Replace all `._id` references with `.id`:**
+1. **Replace all `.id` references with `.id`:**
    ```javascript
    // Old
-   const userId = user._id
+   const userId = user.id
    
    // New
    const userId = user.id
    ```
 
 2. **Check auth token payload:**
-   - The JWT token structure remains the same but uses `.id` instead of `._id`
+   - The JWT token structure remains the same but uses `.id` instead of `.id`
    - No changes needed to auth logic, just variable names
 
 3. **Update URL parameters:**
@@ -212,7 +212,7 @@ const results = await Product.findAll({
 ## Next Steps
 
 1. ✅ Test all API endpoints with Postman/Insomnia
-2. ✅ Update frontend to use `.id` instead of `._id`
+2. ✅ Update frontend to use `.id` instead of `.id`
 3. ✅ Verify PayPal integration still works
 4. ✅ Test file uploads (Cloudinary integration)
 5. ✅ Run comprehensive tests

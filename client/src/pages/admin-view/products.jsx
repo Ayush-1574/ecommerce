@@ -51,7 +51,10 @@ function AdminProducts() {
       ? dispatch(
           editProduct({
             id: currentEditedId,
-            formData,
+            formData: {
+              ...formData,
+              image: uploadedImageUrl || formData.image,
+            },
           })
         ).then((data) => {
           console.log(data, "edit");
@@ -59,6 +62,7 @@ function AdminProducts() {
           if (data?.payload?.success) {
             dispatch(fetchAllProducts());
             setFormData(initialFormData);
+            setUploadedImageUrl("");
             setOpenCreateProductsDialog(false);
             setCurrentEditedId(null);
           }
@@ -74,6 +78,7 @@ function AdminProducts() {
             setOpenCreateProductsDialog(false);
             setImageFile(null);
             setFormData(initialFormData);
+            setUploadedImageUrl("");
             toast("Product add successfully");
           }
         });
@@ -112,6 +117,7 @@ function AdminProducts() {
           ? productList.map((productItem) => (
               <AdminProductTile
                 setFormData={setFormData}
+                setUploadedImageUrl={setUploadedImageUrl}
                 setOpenCreateProductsDialog={setOpenCreateProductsDialog}
                 setCurrentEditedId={setCurrentEditedId}
                 product={productItem}
@@ -126,6 +132,8 @@ function AdminProducts() {
           setOpenCreateProductsDialog(false);
           setCurrentEditedId(null);
           setFormData(initialFormData);
+          setUploadedImageUrl("");
+          setImageFile(null);
         }}
       >
         <SheetContent side="right" className="overflow-auto">
