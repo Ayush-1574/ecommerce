@@ -12,7 +12,6 @@ export const getFeatureImages = createAsyncThunk(
     const response = await axios.get(
       `http://localhost:5000/api/common/feature/get`
     );
-
     return response.data;
   }
 );
@@ -24,8 +23,21 @@ export const addFeatureImage = createAsyncThunk(
       `http://localhost:5000/api/common/feature/add`,
       { image }
     );
-
     return response.data;
+  }
+);
+
+export const deleteFeatureImage = createAsyncThunk(
+  "/order/deleteFeatureImage",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/common/feature/delete/${id}`
+      );
+      return { ...response.data, id };
+    } catch (e) {
+      return rejectWithValue(e?.response?.data?.message || "Failed to delete");
+    }
   }
 );
 
@@ -45,6 +57,14 @@ const commonSlice = createSlice({
       .addCase(getFeatureImages.rejected, (state) => {
         state.isLoading = false;
         state.featureImageList = [];
+      })
+      .addCase(addFeatureImage.fulfilled, (state, action) => {
+        state.featureImageList.push(action.payload.data);
+      })
+      .addCase(deleteFeatureImage.fulfilled, (state, action) => {
+        state.featureImageList = state.featureImageList.filter(
+          (img) => img.id !== action.payload.id
+        );
       });
   },
 });

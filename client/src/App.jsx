@@ -23,6 +23,13 @@ import PaypalReturnPage from "./pages/shopping-view/paypal-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
 
+// Superadmin imports
+import SuperAdminLayout from "./components/superadmin-view/layout";
+import SuperAdminDashboard from "./pages/superadmin-view/dashboard";
+import SuperAdminUsers from "./pages/superadmin-view/users";
+import SuperAdminAdmins from "./pages/superadmin-view/admins";
+import SuperAdminCarousel from "./pages/superadmin-view/carousel";
+
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
     (state) => state.auth
@@ -60,6 +67,22 @@ function App() {
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
         </Route>
+
+        {/* Superadmin routes */}
+        <Route
+          path="/superadmin"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <SuperAdminLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="dashboard" element={<SuperAdminDashboard />} />
+          <Route path="users" element={<SuperAdminUsers />} />
+          <Route path="admins" element={<SuperAdminAdmins />} />
+          <Route path="carousel" element={<SuperAdminCarousel />} />
+        </Route>
+
         <Route
           path="/admin"
           element={
