@@ -5,7 +5,9 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern=__tests__ --forceExit",
+    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern=__tests__ --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern=__tests__ --coverage --forceExit",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "create-superadmin": "node scripts/create-superadmin.js"
@@ -26,5 +28,18 @@
     "paypal-rest-sdk": "^1.8.1",
     "prisma": "^6.19.3"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "extensionsToTreatAsEsm": [
+      ".js"
+    ],
+    "moduleNameMapper": {
+      "^(\\./|\\.\\./)+(.+)\\.js$": "$1$2"
+    },
+    "transform": {}
+  }
 }

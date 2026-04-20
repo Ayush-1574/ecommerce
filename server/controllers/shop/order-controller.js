@@ -16,6 +16,8 @@ const createOrder = async (req, res) => {
       paymentId,
       payerId,
       cartId,
+      couponCode,
+      discountAmount,
     } = req.body;
 
     const create_payment_json = {
@@ -65,6 +67,8 @@ const createOrder = async (req, res) => {
             paymentMethod,
             paymentStatus,
             totalAmount: totalAmount,
+            couponCode: couponCode || null,
+            discountAmount: discountAmount || 0,
             orderDate: new Date(),
             paymentId,
             payerId,

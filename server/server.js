@@ -17,6 +17,10 @@ import shopReviewRouter from "./routes/shop/review-routes.js";
 
 import commonFeatureRouter from "./routes/common/feature-routes.js";
 import superadminRouter from "./routes/superadmin/superadmin-routes.js";
+import siteconfigRouter from "./routes/superadmin/siteconfig-routes.js";
+
+import adminCouponRouter from "./routes/admin/coupon-routes.js";
+import shopCouponRouter from "./routes/shop/coupon-routes.js";
 
 // Test Prisma connection
 async function testDatabaseConnection() {
@@ -68,6 +72,10 @@ app.use("/api/shop/review", shopReviewRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
 app.use("/api/superadmin", superadminRouter);
+app.use("/api/siteconfig", siteconfigRouter);
+
+app.use("/api/admin/coupons", adminCouponRouter);
+app.use("/api/shop/coupons", shopCouponRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

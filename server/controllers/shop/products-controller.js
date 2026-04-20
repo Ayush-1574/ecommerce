@@ -19,7 +19,7 @@ const getFilteredProducts = async (req, res) => {
       };
     }
 
-    let orderBy = [];
+    let orderBy = { price: "asc" }; // sensible default
 
     switch (sortBy) {
       case "price-lowtohigh":

@@ -5,15 +5,19 @@ import UserCartItemsContent from "@/components/shopping-view/cart-items-content"
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { createNewOrder } from "@/store/shop/order-slice";
+import { applyCoupon, clearAppliedCoupon } from "@/store/shop/coupon-slice";
 import { toast } from "sonner";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Ticket, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
   const { approvalURL } = useSelector((state) => state.shopOrder);
+  const { appliedCoupon, isLoading: isApplyingCoupon } = useSelector((state) => state.shopCoupon);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
   const dispatch = useDispatch();
 
   const totalCartAmount =
@@ -28,6 +32,31 @@ function ShoppingCheckout() {
           0
         )
       : 0;
+
+  const finalCartAmount = appliedCoupon 
+    ? Math.max(0, totalCartAmount - appliedCoupon.discountAmount)
+    : totalCartAmount;
+
+  function handleApplyCoupon() {
+    if (!couponCode.trim()) {
+      toast("Please enter a valid coupon code");
+      return;
+    }
+    dispatch(applyCoupon({ code: couponCode, cartTotalAmount: totalCartAmount }))
+      .then((data) => {
+        if (data?.payload?.success) {
+          toast(`Coupon applied! You saved $${data.payload.data.discountAmount}`);
+        } else {
+          toast(data?.payload?.message || "Invalid or expired coupon");
+        }
+      });
+  }
+
+  function handleClearCoupon() {
+    dispatch(clearAppliedCoupon());
+    setCouponCode("");
+    toast("Coupon removed");
+  }
 
   function handleInitiatePaypalPayment() {
     if (cartItems.length === 0) {
@@ -63,7 +92,9 @@ function ShoppingCheckout() {
       orderStatus: "pending",
       paymentMethod: "paypal",
       paymentStatus: "pending",
-      totalAmount: totalCartAmount,
+      totalAmount: finalCartAmount,
+      couponCode: appliedCoupon?.code || null,
+      discountAmount: appliedCoupon?.discountAmount || 0,
       orderDate: new Date(),
       orderUpdateDate: new Date(),
       paymentId: "",
@@ -119,10 +150,48 @@ function ShoppingCheckout() {
                 )}
               {cartItems?.items?.length > 0 && (
                 <>
-                  <div className="border-t pt-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Subtotal</span>
-                      <span className="text-xl font-bold">${totalCartAmount.toFixed(2)}</span>
+                  <div className="border-t pt-4 space-y-3">
+                    <div className="flex px-1 gap-2 items-center">
+                      <Input 
+                        placeholder="Enter coupon code" 
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        disabled={appliedCoupon}
+                        className="flex-1"
+                      />
+                      {appliedCoupon ? (
+                        <Button variant="outline" size="icon" onClick={handleClearCoupon}>
+                           <X className="w-4 h-4 text-red-500" />
+                        </Button>
+                      ) : (
+                        <Button 
+                          onClick={handleApplyCoupon} 
+                          disabled={isApplyingCoupon || !couponCode.trim()}
+                          variant="secondary"
+                        >
+                           <Ticket className="w-4 h-4 mr-2" />
+                           Apply
+                        </Button>
+                      )}
+                    </div>
+                    
+                    <div className="flex flex-col gap-2 pt-2">
+                       <div className="flex justify-between items-center text-muted-foreground">
+                         <span>Subtotal</span>
+                         <span>${totalCartAmount.toFixed(2)}</span>
+                       </div>
+                       
+                       {appliedCoupon && (
+                         <div className="flex justify-between items-center text-green-600 font-medium">
+                           <span>Discount ({appliedCoupon.code})</span>
+                           <span>-${appliedCoupon.discountAmount.toFixed(2)}</span>
+                         </div>
+                       )}
+
+                       <div className="flex justify-between items-center pt-2 border-t">
+                         <span className="font-bold">Total</span>
+                         <span className="text-xl font-bold">${finalCartAmount.toFixed(2)}</span>
+                       </div>
                     </div>
                   </div>
                   <Button
@@ -132,7 +201,7 @@ function ShoppingCheckout() {
                     <CreditCard className="w-4 h-4" />
                     {isPaymentStart
                       ? "Processing Payment..."
-                      : `Pay $${totalCartAmount.toFixed(2)} with Paypal`}
+                      : `Pay $${finalCartAmount.toFixed(2)} with Paypal`}
                   </Button>
                 </>
               )}

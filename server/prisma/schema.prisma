@@ -73,6 +73,8 @@ model Order {
   orderUpdateDate   DateTime?  @updatedAt
   paymentId         String?
   payerId           String?
+  couponCode        String?
+  discountAmount    Decimal?   @default(0) @db.Decimal(10, 2)
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
   
@@ -120,4 +122,26 @@ model Feature {
   updatedAt DateTime   @updatedAt
   
   @@map("features")
+}
+
+model SiteConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_configs")
+}
+
+model Coupon {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  discountType    String   // "percentage" or "fixed"
+  discountValue   Decimal  @db.Decimal(10, 2)
+  minOrderAmount  Decimal  @default(0) @db.Decimal(10, 2)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("coupons")
 }

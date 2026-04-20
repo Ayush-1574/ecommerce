@@ -2,12 +2,11 @@ import { Fragment } from "react";
 import {
   LayoutDashboard,
   Users,
-  ShieldCheck,
-  BarChart3,
   LogOut,
   Crown,
   UserCog,
   Images,
+  Settings2,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -37,6 +36,12 @@ const menuItems = [
     label: "Carousel Banners",
     path: "/superadmin/carousel",
     icon: <Images className="w-5 h-5" />,
+  },
+  {
+    id: "site-content",
+    label: "Site Content",
+    path: "/superadmin/site-content",
+    icon: <Settings2 className="w-5 h-5" />,
   },
 ];
 

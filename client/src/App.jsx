@@ -7,6 +7,7 @@ import AdminDashboard from "./pages/admin-view/dashboard";
 import AdminProducts from "./pages/admin-view/products";
 import AdminOrders from "./pages/admin-view/orders";
 import AdminFeatures from "./pages/admin-view/features";
+import AdminCoupons from "./pages/admin-view/coupons";
 import ShoppingLayout from "./components/shopping-view/layout";
 import NotFound from "./pages/not-found";
 import ShoppingHome from "./pages/shopping-view/home";
@@ -29,6 +30,7 @@ import SuperAdminDashboard from "./pages/superadmin-view/dashboard";
 import SuperAdminUsers from "./pages/superadmin-view/users";
 import SuperAdminAdmins from "./pages/superadmin-view/admins";
 import SuperAdminCarousel from "./pages/superadmin-view/carousel";
+import SuperAdminSiteContent from "./pages/superadmin-view/site-content";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -81,6 +83,7 @@ function App() {
           <Route path="users" element={<SuperAdminUsers />} />
           <Route path="admins" element={<SuperAdminAdmins />} />
           <Route path="carousel" element={<SuperAdminCarousel />} />
+          <Route path="site-content" element={<SuperAdminSiteContent />} />
         </Route>
 
         <Route
@@ -95,6 +98,7 @@ function App() {
           <Route path="product" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="features" element={<AdminFeatures />} />
+          <Route path="coupons" element={<AdminCoupons />} />
         </Route>
         <Route
           path="/shop"

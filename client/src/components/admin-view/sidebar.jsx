@@ -1,7 +1,7 @@
 import React, { Fragment } from "react"
 import {BadgeCheck, ChartNoAxesCombined, LogOut, Settings} from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { LayoutDashboard , ShoppingBasket } from "lucide-react"
+import { LayoutDashboard , ShoppingBasket, Ticket } from "lucide-react"
 import { useDispatch } from "react-redux"
 import { logoutUser } from "@/store/auth-slice"
 
@@ -30,6 +30,12 @@ const adminSidebarMenuItems = [
         label : "Features",
         path : "/admin/features",
         icon : <ChartNoAxesCombined className="w-5 h-5" />
+    },
+    {
+        id : 'coupons',
+        label : "Coupons",
+        path : "/admin/coupons",
+        icon : <Ticket className="w-5 h-5" />
     },
 ]
 
