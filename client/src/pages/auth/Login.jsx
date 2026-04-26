@@ -46,6 +46,14 @@ function AuthLogin() {
           onSubmit={onSubmit}
         />
       </div>
+      <div className="text-center">
+        <Link
+          className="text-sm font-medium text-primary hover:underline underline-offset-4 transition-colors"
+          to="/auth/forgot-password"
+        >
+          Forgot your password?
+        </Link>
+      </div>
       <p className="text-center text-sm text-muted-foreground">
         Don't have an account?{" "}
         <Link

@@ -23,7 +23,9 @@ function CheckAuth({ isAuthenticated, user, children }) {
     !isAuthenticated &&
     !(
       location.pathname.includes("/login") ||
-      location.pathname.includes("/register")
+      location.pathname.includes("/register") ||
+      location.pathname.includes("/forgot-password") ||
+      location.pathname.includes("/reset-password")
     )
   ) {
     return <Navigate to="/auth/login" />;
