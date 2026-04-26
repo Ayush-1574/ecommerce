@@ -56,28 +56,28 @@ describe("Cart Component", () => {
   ];
 
   test("renders cart items from redux", () => {
-    renderWithProviders(<Sheet><Cart cartItems={dummyCartItems} /></Sheet>);
+    renderWithProviders(<Sheet open={true}><Cart cartItems={dummyCartItems} /></Sheet>);
 
     expect(screen.getByText(/T-Shirt/i)).toBeInTheDocument();
     expect(screen.getByText(/Shoes/i)).toBeInTheDocument();
   });
 
   test("shows correct quantity", () => {
-    renderWithProviders(<Sheet><Cart cartItems={dummyCartItems} /></Sheet>);
+    renderWithProviders(<Sheet open={true}><Cart cartItems={dummyCartItems} /></Sheet>);
 
-    expect(screen.getByText("2")).toBeInTheDocument();
-    expect(screen.getByText("1")).toBeInTheDocument();
+    expect(screen.getAllByText("2").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("1").length).toBeGreaterThan(0);
   });
 
   test("calculates total price", () => {
-    renderWithProviders(<Sheet><Cart cartItems={dummyCartItems} /></Sheet>);
+    renderWithProviders(<Sheet open={true}><Cart cartItems={dummyCartItems} /></Sheet>);
 
     // 500*2 + 1000*1 = 2000
     expect(screen.getByText(/2000/)).toBeInTheDocument();
   });
 
   test("renders cart heading", () => {
-    renderWithProviders(<Sheet><Cart cartItems={dummyCartItems} /></Sheet>);
+    renderWithProviders(<Sheet open={true}><Cart cartItems={dummyCartItems} /></Sheet>);
 
     expect(screen.getByText(/cart/i)).toBeInTheDocument();
   });

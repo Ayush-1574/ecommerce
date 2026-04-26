@@ -5,9 +5,9 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern=__tests__ --forceExit",
-    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern=__tests__ --watch",
-    "test:coverage": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern=__tests__ --coverage --forceExit",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=__tests__ --forceExit",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=__tests__ --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=__tests__ --coverage --forceExit",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "create-superadmin": "node scripts/create-superadmin.js"
@@ -34,12 +34,6 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "extensionsToTreatAsEsm": [
-      ".js"
-    ],
-    "moduleNameMapper": {
-      "^(\\./|\\.\\./)+(.+)\\.js$": "$1$2"
-    },
     "transform": {}
   }
 }
