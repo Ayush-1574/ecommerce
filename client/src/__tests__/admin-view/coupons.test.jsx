@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { MemoryRouter } from "react-router-dom";
 
-import AdminCoupons from "@/pages/admin-view/coupons";
+import AdminCoupons from "@/pages/admin-view/Coupons";
 
 const mockReducer = {
   adminCoupon: () => ({
@@ -49,10 +49,10 @@ describe("AdminCoupons Component", () => {
 
   test("renders coupon list from redux store", () => {
     renderWithProviders(<AdminCoupons />);
-    
+
     expect(screen.getByText("SAVE10")).toBeInTheDocument();
     expect(screen.getByText("10%")).toBeInTheDocument();
-    
+
     expect(screen.getByText("MINUS5")).toBeInTheDocument();
     expect(screen.getByText("$5")).toBeInTheDocument();
   });
