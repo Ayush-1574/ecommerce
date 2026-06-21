@@ -13,7 +13,7 @@ import AdminCoupons from "./pages/admin-view/coupons";
 import ShoppingLayout from "./components/shopping-view/layout";
 import NotFound from "./pages/Not-Found";
 import ShoppingHome from "./pages/shopping-view/Home";
-import ShoppingListing from "./pages/shopping-view/listing";
+import ShoppingListing from "./pages/shopping-view/Listing";
 import ShoppingCheckout from "./pages/shopping-view/checkout";
 import ShoppingAccount from "./pages/shopping-view/Account";
 import CheckAuth from "./components/common/check-auth";
