@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { API_BASE_URL } from "../../config/apiConfig.js";
 
 const initialState = {
   isLoading: false,
@@ -7,10 +8,10 @@ const initialState = {
 };
 
 export const addNewCoupon = createAsyncThunk(
-  "/coupon/addNewCoupon",
+  "/coupons/addNewCoupon",
   async (formData) => {
     const result = await axios.post(
-      "http://localhost:5000/api/admin/coupons/add",
+      `${API_BASE_URL}/api/admin/coupons/add`,
       formData,
       {
         headers: {
@@ -27,7 +28,7 @@ export const fetchAllCoupons = createAsyncThunk(
   "/coupon/fetchAllCoupons",
   async () => {
     const result = await axios.get(
-      "http://localhost:5000/api/admin/coupons/get",
+      `${API_BASE_URL}/api/admin/coupons/get`,
       {
         withCredentials: true,
       }
@@ -40,7 +41,7 @@ export const editCoupon = createAsyncThunk(
   "/coupon/editCoupon",
   async ({ id, formData }) => {
     const result = await axios.put(
-      `http://localhost:5000/api/admin/coupons/edit/${id}`,
+      `${API_BASE_URL}/api/admin/coupons/edit/${id}`,
       formData,
       {
         headers: {
@@ -57,7 +58,7 @@ export const deleteCoupon = createAsyncThunk(
   "/coupon/deleteCoupon",
   async (id) => {
     const result = await axios.delete(
-      `http://localhost:5000/api/admin/coupons/delete/${id}`,
+      `${API_BASE_URL}/api/admin/coupons/delete/${id}`,
       {
         withCredentials: true,
       }

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { API_ENDPOINTS } from "../../config/apiConfig.js";
 
 const initialState = {
   isAuthenticated: false,
@@ -12,7 +13,7 @@ export const registerUser = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/auth/register",
+      API_ENDPOINTS.AUTH_REGISTER,
       formData,
       {
         withCredentials: true,
@@ -28,7 +29,7 @@ export const loginUser = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/auth/login",
+      API_ENDPOINTS.AUTH_LOGIN,
       formData,
       {
         withCredentials: true,
@@ -44,7 +45,7 @@ export const logoutUser = createAsyncThunk(
 
   async () => {
     const response = await axios.post(
-      "http://localhost:5000/api/auth/logout",
+      API_ENDPOINTS.AUTH_LOGOUT,
       {},
       {
         withCredentials: true,
@@ -60,7 +61,7 @@ export const checkAuth = createAsyncThunk(
 
   async () => {
     const response = await axios.get(
-      "http://localhost:5000/api/auth/check-auth",
+      API_ENDPOINTS.AUTH_CHECK,
       {
         withCredentials: true,
         headers: {
@@ -79,7 +80,7 @@ export const forgotPassword = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/auth/forgot-password",
+      API_ENDPOINTS.AUTH_FORGOT_PASSWORD,
       formData,
       {
         withCredentials: true,
@@ -93,9 +94,10 @@ export const forgotPassword = createAsyncThunk(
 export const resetPassword = createAsyncThunk(
   "/auth/resetPassword",
 
+  
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/auth/reset-password",
+      API_ENDPOINTS.AUTH_RESET_PASSWORD,
       formData,
       {
         withCredentials: true,

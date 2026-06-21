@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { API_BASE_URL } from "../../config/apiConfig.js";
 
 const initialState = {
   isLoading: false,
@@ -11,7 +12,7 @@ export const applyCoupon = createAsyncThunk(
   async ({ code, cartTotalAmount }, { rejectWithValue }) => {
     try {
       const result = await axios.post(
-        "http://localhost:5000/api/shop/coupons/apply",
+        `${API_BASE_URL}/api/shop/coupons/apply`,
         { code, cartTotalAmount },
         {
           headers: {

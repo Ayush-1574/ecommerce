@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { API_BASE_URL } from "../../config/apiConfig.js";
 
-const BASE = "http://localhost:5000/api/superadmin";
+const BASE = `${API_BASE_URL}/api/superadmin`;
 
 const initialState = {
   isLoading: false,
