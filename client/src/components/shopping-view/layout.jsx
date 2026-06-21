@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import ShoppingHeader from "./header";
+import ShoppingHeader from "./Header";
 import { Sparkles, Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
