@@ -11,7 +11,7 @@ import AdminOrders from "./pages/admin-view/Orders";
 import AdminFeatures from "./pages/admin-view/Features";
 import AdminCoupons from "./pages/admin-view/coupons";
 import ShoppingLayout from "./components/shopping-view/layout";
-import NotFound from "./pages/Not-found";
+import NotFound from "./pages/Not-Found";
 import ShoppingHome from "./pages/shopping-view/home";
 import ShoppingListing from "./pages/shopping-view/listing";
 import ShoppingCheckout from "./pages/shopping-view/checkout";
