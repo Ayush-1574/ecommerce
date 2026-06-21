@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { MemoryRouter } from "react-router-dom";
 
-import AdminCoupons from "@/pages/admin-view/Coupons";
+import AdminCoupons from "@/pages/admin-view/coupons";
 
 const mockReducer = {
   adminCoupon: () => ({
