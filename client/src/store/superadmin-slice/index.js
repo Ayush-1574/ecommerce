@@ -70,6 +70,18 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
+export const resetUserPassword = createAsyncThunk(
+  "superadmin/resetPassword",
+  async ({ id, password }, { rejectWithValue }) => {
+    try {
+      const res = await axios.put(`${BASE}/users/${id}/password`, { password }, { withCredentials: true });
+      return res.data;
+    } catch (e) {
+      return rejectWithValue(e?.response?.data?.message || "Failed to reset password");
+    }
+  }
+);
+
 const superadminSlice = createSlice({
   name: "superadmin",
   initialState,

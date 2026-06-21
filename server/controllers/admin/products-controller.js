@@ -48,6 +48,7 @@ const addProduct = async (req, res) => {
         salePrice: salePrice ? parseFloat(salePrice) : null,
         totalStock: totalStock ? parseInt(totalStock) : 0,
         averageReview: averageReview ? parseFloat(averageReview) : 0,
+        adminId: req.user.id, // Set the adminId to current user
       },
     });
 
@@ -68,7 +69,15 @@ const addProduct = async (req, res) => {
 
 const fetchAllProducts = async (req, res) => {
   try {
-    const listOfProducts = await prisma.product.findMany();
+    const { role, id } = req.user;
+    let query = {};
+
+    // If role is admin, only fetch their products. Superadmin sees all.
+    if (role === "admin") {
+      query.where = { adminId: id };
+    }
+
+    const listOfProducts = await prisma.product.findMany(query);
     res.status(200).json({
       success: true,
       data: listOfProducts,
@@ -106,6 +115,14 @@ const editProduct = async (req, res) => {
         success: false,
         message: "Product not found",
       });
+
+    // Check ownership
+    if (req.user.role === "admin" && findProduct.adminId !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to edit this product",
+      });
+    }
 
     await prisma.product.update({
       where: { id },
@@ -153,6 +170,14 @@ const deleteProduct = async (req, res) => {
         success: false,
         message: "Product not found",
       });
+
+    // Check ownership
+    if (req.user.role === "admin" && product.adminId !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this product",
+      });
+    }
 
     await prisma.product.delete({
       where: { id },

@@ -4,11 +4,12 @@ import {
   getOrderDetailsForAdmin,
   updateOrderStatus,
 } from "../../controllers/admin/order-controller.js";
+import { authMiddleware } from "../../controllers/auth/auth-controller.js";
 
 const router = express.Router();
 
-router.get("/get", getAllOrdersOfAllUsers);
-router.get("/details/:id", getOrderDetailsForAdmin);
-router.put("/update/:id", updateOrderStatus);
+router.get("/get", authMiddleware, getAllOrdersOfAllUsers);
+router.get("/details/:id", authMiddleware, getOrderDetailsForAdmin);
+router.put("/update/:id", authMiddleware, updateOrderStatus);
 
 export default router;

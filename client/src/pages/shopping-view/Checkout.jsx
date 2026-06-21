@@ -58,6 +58,59 @@ function ShoppingCheckout() {
     toast("Coupon removed");
   }
 
+  function handleInitiateDirectPayment() {
+    if (cartItems.length === 0) {
+      toast("Your cart is empty. Please add items to proceed");
+      return;
+    }
+    if (currentSelectedAddress === null) {
+      toast("Please select one address to proceed.");
+      return;
+    }
+
+    const orderData = {
+      userId: user?.id,
+      cartId: cartItems?.id,
+      cartItems: cartItems.items.map((singleCartItem) => ({
+        productId: singleCartItem?.productId,
+        title: singleCartItem?.title,
+        image: singleCartItem?.image,
+        price:
+          singleCartItem?.salePrice > 0
+            ? singleCartItem?.salePrice
+            : singleCartItem?.price,
+        quantity: singleCartItem?.quantity,
+      })),
+      addressInfo: {
+        addressId: currentSelectedAddress?.id,
+        address: currentSelectedAddress?.address,
+        city: currentSelectedAddress?.city,
+        pincode: currentSelectedAddress?.pincode,
+        phone: currentSelectedAddress?.phone,
+        notes: currentSelectedAddress?.notes,
+      },
+      orderStatus: "confirmed",
+      paymentMethod: "direct",
+      paymentStatus: "paid",
+      totalAmount: finalCartAmount,
+      couponCode: appliedCoupon?.code || null,
+      discountAmount: appliedCoupon?.discountAmount || 0,
+      orderDate: new Date(),
+      orderUpdateDate: new Date(),
+      paymentId: "DIRECT_CHECKOUT",
+      payerId: user?.id,
+    };
+
+    dispatch(createNewOrder(orderData)).then((data) => {
+      if (data?.payload?.success) {
+        toast("Order placed successfully!");
+        window.location.href = "/shop/payment-success";
+      } else {
+        toast("Failed to place order.");
+      }
+    });
+  }
+
   function handleInitiatePaypalPayment() {
     if (cartItems.length === 0) {
       toast("Your cart is empty. Please add items to proceed");
@@ -194,15 +247,25 @@ function ShoppingCheckout() {
                        </div>
                     </div>
                   </div>
-                  <Button
-                    onClick={handleInitiatePaypalPayment}
-                    className="w-full rounded-xl h-12 font-semibold gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    <CreditCard className="w-4 h-4" />
-                    {isPaymentStart
-                      ? "Processing Payment..."
-                      : `Pay $${finalCartAmount.toFixed(2)} with Paypal`}
-                  </Button>
+                  <div className="flex flex-col gap-3">
+                    <Button
+                      onClick={handleInitiatePaypalPayment}
+                      className="w-full rounded-xl h-12 font-semibold gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      <CreditCard className="w-4 h-4" />
+                      {isPaymentStart
+                        ? "Processing Payment..."
+                        : `Pay $${finalCartAmount.toFixed(2)} with Paypal`}
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={handleInitiateDirectPayment}
+                      className="w-full rounded-xl h-12 font-semibold gap-2 transition-all border-dashed border-2 hover:bg-slate-50"
+                    >
+                      Direct Checkout (Fast Test)
+                    </Button>
+                  </div>
                 </>
               )}
             </div>

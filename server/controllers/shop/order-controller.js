@@ -20,6 +20,61 @@ const createOrder = async (req, res) => {
       discountAmount,
     } = req.body;
 
+    if (paymentMethod !== "paypal") {
+      const newlyCreatedOrder = await prisma.order.create({
+        data: {
+          userId,
+          cartId,
+          cartItems: cartItems,
+          addressInfo: addressInfo,
+          orderStatus: "confirmed",
+          paymentMethod,
+          paymentStatus: "paid",
+          totalAmount: totalAmount,
+          couponCode: couponCode || null,
+          discountAmount: discountAmount || 0,
+          orderDate: new Date(),
+          paymentId: "DIRECT_CHECKOUT",
+          payerId: userId,
+        },
+      });
+
+      // Stock management and cart cleanup for direct checkout
+      for (let item of cartItems) {
+        await prisma.product.update({
+          where: { id: item.productId },
+          data: {
+            totalStock: {
+              decrement: item.quantity,
+            },
+          },
+        }).catch((err) => console.log("Stock update error:", err));
+      }
+
+      if (cartId) {
+        await prisma.cart.delete({
+          where: { id: cartId },
+        }).catch(() => {});
+      }
+
+      // Increment coupon usage
+      if (couponCode) {
+        await prisma.coupon.update({
+          where: { code: couponCode },
+          data: {
+            usageCount: {
+              increment: 1,
+            },
+          },
+        }).catch((err) => console.log("Coupon usage error:", err));
+      }
+
+      return res.status(201).json({
+        success: true,
+        orderId: newlyCreatedOrder.id,
+      });
+    }
+
     const create_payment_json = {
       intent: "sale",
       payer: {
@@ -153,6 +208,20 @@ const capturePayment = async (req, res) => {
       await prisma.cart.delete({
         where: { id: getCartId },
       }).catch(() => {}); // Silently catch if cart doesn't exist
+    }
+
+    // Increment coupon usage count if a coupon was used
+    if (order.couponCode) {
+      await prisma.coupon.update({
+        where: { code: order.couponCode },
+        data: {
+          usageCount: {
+            increment: 1,
+          },
+        },
+      }).catch((err) => {
+        console.log("Error incrementing coupon usage count:", err);
+      });
     }
 
     res.status(200).json({

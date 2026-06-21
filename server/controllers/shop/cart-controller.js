@@ -46,20 +46,20 @@ const addToCart = async (req, res) => {
       items[findCurrentProductIndex].quantity += quantity;
     }
 
-    await prisma.cart.update({
+    const updatedCart = await prisma.cart.update({
       where: { userId },
       data: { items },
     });
 
     res.status(200).json({
       success: true,
-      data: cart,
+      data: updatedCart,
     });
   } catch (error) {
-    console.log(error);
+    console.log("Add to cart error:", error);
     res.status(500).json({
       success: false,
-      message: "Error",
+      message: error.message || "Error occurred while adding to cart",
     });
   }
 };

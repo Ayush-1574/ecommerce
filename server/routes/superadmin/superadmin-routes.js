@@ -5,6 +5,7 @@ import {
   deleteUser,
   createAdmin,
   getSuperadminStats,
+  resetUserPassword,
 } from "../../controllers/superadmin/superadmin-controller.js";
 import { authMiddleware } from "../../controllers/auth/auth-controller.js";
 
@@ -27,6 +28,7 @@ router.get("/stats", getSuperadminStats);
 router.get("/users", getAllUsers);
 router.post("/admins", createAdmin);
 router.put("/users/:id/role", updateUserRole);
+router.put("/users/:id/password", resetUserPassword);
 router.delete("/users/:id", deleteUser);
 
 export default router;

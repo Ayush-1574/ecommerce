@@ -5,12 +5,13 @@ import {
   editCoupon,
   deleteCoupon,
 } from "../../controllers/admin/coupon-controller.js";
+import { authMiddleware } from "../../controllers/auth/auth-controller.js";
 
 const router = express.Router();
 
-router.post("/add", createCoupon);
-router.get("/get", fetchAllCoupons);
-router.put("/edit/:id", editCoupon);
-router.delete("/delete/:id", deleteCoupon);
+router.post("/add", authMiddleware, createCoupon);
+router.get("/get", authMiddleware, fetchAllCoupons);
+router.put("/edit/:id", authMiddleware, editCoupon);
+router.delete("/delete/:id", authMiddleware, deleteCoupon);
 
 export default router;

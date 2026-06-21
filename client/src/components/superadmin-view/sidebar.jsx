@@ -7,6 +7,8 @@ import {
   UserCog,
   Images,
   Settings2,
+  ShieldAlert,
+  ShoppingCart,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -42,6 +44,12 @@ const menuItems = [
     label: "Site Content",
     path: "/superadmin/site-content",
     icon: <Settings2 className="w-5 h-5" />,
+  },
+  {
+    id: "coupons",
+    label: "Coupons",
+    path: "/superadmin/coupons",
+    icon: <ShoppingCart className="w-5 h-5" />,
   },
 ];
 

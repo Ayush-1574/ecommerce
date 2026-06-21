@@ -38,6 +38,28 @@ const couponFormElements = [
     type: "number",
     placeholder: "Enter min cart total to apply",
   },
+  {
+    label: "End Date",
+    name: "endDate",
+    componentType: "input",
+    type: "date",
+  },
+  {
+    label: "Usage Limit",
+    name: "usageLimit",
+    componentType: "input",
+    type: "number",
+    placeholder: "Max number of uses (optional)",
+  },
+  {
+    label: "Status",
+    name: "isActive",
+    componentType: "select",
+    options: [
+      { id: true, label: "Active" },
+      { id: false, label: "Inactive" },
+    ],
+  },
 ];
 
 const initialFormData = {
@@ -45,6 +67,9 @@ const initialFormData = {
   discountType: "percentage",
   discountValue: "",
   minOrderAmount: "0",
+  endDate: "",
+  usageLimit: "",
+  isActive: true,
 };
 
 function AdminCoupons() {
@@ -97,6 +122,9 @@ function AdminCoupons() {
       discountType: coupon.discountType,
       discountValue: coupon.discountValue,
       minOrderAmount: coupon.minOrderAmount,
+      endDate: coupon.endDate ? new Date(coupon.endDate).toISOString().split("T")[0] : "",
+      usageLimit: coupon.usageLimit || "",
+      isActive: coupon.isActive,
     });
     setOpenCreateCouponDialog(true);
   }
@@ -143,6 +171,28 @@ function AdminCoupons() {
                   <span className="text-muted-foreground">Min Order:</span>
                   <span className="font-medium">${coupon.minOrderAmount}</span>
                 </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Status:</span>
+                  <span className={`font-bold ${coupon.isActive ? "text-green-600" : "text-red-600"}`}>
+                    {coupon.isActive ? "Active" : "Inactive"}
+                  </span>
+                </div>
+                {coupon.endDate && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">Expires:</span>
+                    <span className={`font-medium ${new Date(coupon.endDate) < new Date() ? "text-red-500" : ""}`}>
+                      {new Date(coupon.endDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
+                {coupon.usageLimit && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">Usage:</span>
+                    <span className="font-medium">
+                      {coupon.usageCount} / {coupon.usageLimit}
+                    </span>
+                  </div>
+                )}
                 
                 <div className="flex space-x-2 w-full pt-4">
                   <Button variant="outline" className="flex-1" onClick={() => handleEditContact(coupon)}>

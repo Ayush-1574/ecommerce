@@ -27,7 +27,10 @@ export const fetchAllCoupons = createAsyncThunk(
   "/coupon/fetchAllCoupons",
   async () => {
     const result = await axios.get(
-      "http://localhost:5000/api/admin/coupons/get"
+      "http://localhost:5000/api/admin/coupons/get",
+      {
+        withCredentials: true,
+      }
     );
     return result?.data;
   }
@@ -54,7 +57,10 @@ export const deleteCoupon = createAsyncThunk(
   "/coupon/deleteCoupon",
   async (id) => {
     const result = await axios.delete(
-      `http://localhost:5000/api/admin/coupons/delete/${id}`
+      `http://localhost:5000/api/admin/coupons/delete/${id}`,
+      {
+        withCredentials: true,
+      }
     );
     return result?.data;
   }

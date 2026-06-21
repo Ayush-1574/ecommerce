@@ -38,6 +38,22 @@ const applyCoupon = async (req, res) => {
       });
     }
 
+    // Check for expiry date
+    if (coupon.endDate && new Date(coupon.endDate) < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "This coupon has expired",
+      });
+    }
+
+    // Check for usage limit
+    if (coupon.usageLimit && coupon.usageCount >= coupon.usageLimit) {
+      return res.status(400).json({
+        success: false,
+        message: "This coupon usage limit has been reached",
+      });
+    }
+
     if (currentTotal < parseFloat(coupon.minOrderAmount)) {
       return res.status(400).json({
         success: false,

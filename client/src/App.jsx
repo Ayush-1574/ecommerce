@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import AuthLayout from "./components/auth/layout";
-import AuthLogin from "./pages/auth/login";
+import AuthLogin from "./pages/auth/Login";
 import AuthRegister from "./pages/auth/register";
 import ForgotPassword from "./pages/auth/forgot-password";
 import ResetPassword from "./pages/auth/reset-password";
@@ -88,6 +88,7 @@ function App() {
           <Route path="admins" element={<SuperAdminAdmins />} />
           <Route path="carousel" element={<SuperAdminCarousel />} />
           <Route path="site-content" element={<SuperAdminSiteContent />} />
+          <Route path="coupons" element={<AdminCoupons />} />
         </Route>
 
         <Route

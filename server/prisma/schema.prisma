@@ -25,6 +25,7 @@ model User {
   orders    Order[]
   addresses Address[]
   reviews   Review[]
+  products  Product[]  @relation("AdminProducts")
   
   @@map("users")
 }
@@ -44,6 +45,8 @@ model Product {
   updatedAt       DateTime  @updatedAt
   
   reviews         Review[]
+  adminId         String?
+  admin           User?     @relation("AdminProducts", fields: [adminId], references: [id])
   
   @@map("products")
 }
@@ -141,6 +144,9 @@ model Coupon {
   discountType    String   // "percentage" or "fixed"
   discountValue   Decimal  @db.Decimal(10, 2)
   minOrderAmount  Decimal  @default(0) @db.Decimal(10, 2)
+  endDate         DateTime?
+  usageLimit      Int?
+  usageCount      Int      @default(0)
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

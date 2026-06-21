@@ -3,7 +3,7 @@ import prisma from "../../lib/prisma.js";
 // Create a new coupon
 const createCoupon = async (req, res) => {
   try {
-    const { code, discountType, discountValue, minOrderAmount, isActive } = req.body;
+    const { code, discountType, discountValue, minOrderAmount, endDate, usageLimit, isActive } = req.body;
 
     // Check if code already exists
     const existingCoupon = await prisma.coupon.findUnique({
@@ -23,6 +23,8 @@ const createCoupon = async (req, res) => {
         discountType,
         discountValue,
         minOrderAmount: minOrderAmount || 0,
+        endDate: endDate ? new Date(endDate) : null,
+        usageLimit: usageLimit ? parseInt(usageLimit) : null,
         isActive: isActive !== undefined ? isActive : true,
       },
     });
@@ -63,7 +65,7 @@ const fetchAllCoupons = async (req, res) => {
 const editCoupon = async (req, res) => {
   try {
     const { id } = req.params;
-    const { code, discountType, discountValue, minOrderAmount, isActive } = req.body;
+    const { code, discountType, discountValue, minOrderAmount, endDate, usageLimit, isActive } = req.body;
 
     const findCoupon = await prisma.coupon.findUnique({
       where: { id },
@@ -83,6 +85,8 @@ const editCoupon = async (req, res) => {
         discountType: discountType || findCoupon.discountType,
         discountValue: discountValue === "" ? 0 : discountValue || findCoupon.discountValue,
         minOrderAmount: minOrderAmount === "" ? 0 : minOrderAmount || findCoupon.minOrderAmount,
+        endDate: endDate !== undefined ? (endDate ? new Date(endDate) : null) : findCoupon.endDate,
+        usageLimit: usageLimit !== undefined ? (usageLimit ? parseInt(usageLimit) : null) : findCoupon.usageLimit,
         isActive: isActive !== undefined ? isActive : findCoupon.isActive,
       },
     });

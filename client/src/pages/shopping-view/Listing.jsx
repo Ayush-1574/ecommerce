@@ -71,6 +71,14 @@ function ShoppingListing() {
   }
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
+    console.log("Adding to cart:", { getCurrentProductId, getTotalStock, userId: user?.id });
+
+    if (!user) {
+      toast("Please login to add items to cart");
+      navigate("/auth/login");
+      return;
+    }
+
     let getCartItems = cartItems.items || [];
     if (getCartItems.length) {
       const indexOfCurrentItem = getCartItems.findIndex(
@@ -79,19 +87,27 @@ function ShoppingListing() {
       if (indexOfCurrentItem > -1) {
         const getQuantity = getCartItems[indexOfCurrentItem].quantity;
         if (getQuantity + 1 > getTotalStock) {
-          toast(`Only ${getQuantity} quantity can be added`);
+          toast(`Only ${getQuantity} quantity can be added (Max stock reached)`);
           return;
         }
       }
     }
-    dispatch(addToCart({ userId: user?.id, productId: getCurrentProductId, quantity: 1 })).then(
-      (data) => {
-        if (data?.payload?.success) {
-          dispatch(fetchCartItems(user?.id));
-          toast("Product added to cart!");
-        }
+
+    dispatch(
+      addToCart({
+        userId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+      })
+    ).then((data) => {
+      console.log("Add to cart response:", data);
+      if (data?.payload?.success) {
+        dispatch(fetchCartItems(user?.id));
+        toast("Product added to cart!");
+      } else {
+        toast(data?.payload?.message || "Failed to add product to cart");
       }
-    );
+    });
   }
 
   useEffect(() => {
